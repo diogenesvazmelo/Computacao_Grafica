@@ -1,0 +1,4 @@
+
+ COISAS PARA REVISAR NO JOGUINHO: 
+
+ - Revisar função atira (bugs quando atira e mexe a a nave ao mesmo tempo)

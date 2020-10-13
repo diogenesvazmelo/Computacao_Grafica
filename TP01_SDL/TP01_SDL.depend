@@ -1,0 +1,25 @@
+# depslib dependency file v1.0
+1602447967 source:g:\users\di62028\documents\cg\tp01_sdl\main.cpp
+	<SDL.h>
+	"SDL_opengl.h"
+	<stdio.h>
+	"cores.c"
+
+1585065707 source:g:\users\di62028\documents\cg\tp01_sdl\cores.c
+	<stdio.h>
+
+1585065707 g:\users\di62028\documents\cg\tp01_sdl\cores.c
+	<stdio.h>
+
+1585065707 source:g:\users\di62028\documents\repositórios\cg\tp01_sdl\cores.c
+	<stdio.h>
+
+1602447967 source:g:\users\di62028\documents\repositórios\cg\tp01_sdl\main.cpp
+	<SDL.h>
+	"SDL_opengl.h"
+	<stdio.h>
+	"cores.c"
+
+1585065707 g:\users\di62028\documents\repositórios\cg\tp01_sdl\cores.c
+	<stdio.h>
+
