@@ -23,3 +23,15 @@
 1585065707 g:\users\di62028\documents\repositórios\cg\tp01_sdl\cores.c
 	<stdio.h>
 
+1602641030 source:/home/nick/Documents/CG/TP01_SDL/cores.c
+	<stdio.h>
+
+1602641030 source:/home/nick/Documents/CG/TP01_SDL/main.cpp
+	<SDL.h>
+	"SDL_opengl.h"
+	<stdio.h>
+	"cores.c"
+
+1602641030 /home/nick/Documents/CG/TP01_SDL/cores.c
+	<stdio.h>
+
