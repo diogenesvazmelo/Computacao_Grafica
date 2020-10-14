@@ -35,3 +35,17 @@
 1602641030 /home/nick/Documents/CG/TP01_SDL/cores.c
 	<stdio.h>
 
+1602702894 source:g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\main.cpp
+	<SDL/SDL.h>
+	"SDL/SDL_opengl.h"
+	<SDL.h>
+	"SDL_opengl.h"
+	<iostream>
+	"include/cores.hpp"
+
+1602702894 g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\include\cores.hpp
+
+1602702894 source:g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\cores.cpp
+	<stdio.h>
+	"include/cores.hpp"
+
