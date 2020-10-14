@@ -1,11 +1,5 @@
 #include <stdio.h>
-
-typedef struct //binario
-{
-   float cor1;
-   float cor2;
-   float cor3;
-}Cores;
+#include "include/cores.hpp"
 
 /// Cores Prontas
 Cores Vermelho()
@@ -88,5 +82,3 @@ Cores Branco()
     branco.cor3 = 1;
     return branco;
 }
-
-///
