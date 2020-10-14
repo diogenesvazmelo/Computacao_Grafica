@@ -12,8 +12,8 @@
 #include "SDL_opengl.h"
 #endif
 
-#include <stdio.h>
-#include "cores.c"
+#include <iostream>
+#include "include/cores.hpp"
 
 #define LARGURA_JANELA 600
 #define ALTURA_JANELA 400
@@ -73,7 +73,6 @@ bool colisaoInimigos(Coordenada obj1, Coordenada obj1_incremento, Coordenada obj
 
 int main(int argc, char *args[])
 {
-
     SDL_Init(SDL_INIT_EVERYTHING);
     //glDisable(GL_BLEND); //Para Windows apenas
 
