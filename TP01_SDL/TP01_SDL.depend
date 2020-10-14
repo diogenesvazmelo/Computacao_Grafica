@@ -26,9 +26,9 @@
 1602641030 source:/home/nick/Documents/CG/TP01_SDL/cores.c
 	<stdio.h>
 
-1602641030 source:/home/nick/Documents/CG/TP01_SDL/main.cpp
-	<SDL.h>
-	"SDL_opengl.h"
+1602686358 source:/home/nick/Documents/CG/TP01_SDL/main.cpp
+	<SDL/SDL.h>
+	"SDL/SDL_opengl.h"
 	<stdio.h>
 	"cores.c"
 
