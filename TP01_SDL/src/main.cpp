@@ -14,62 +14,38 @@
 
 #include <iostream>
 #include "../include/colors.hpp"
+#include "../include/drawings.hpp"
 
-#define LARGURA_JANELA 600
-#define ALTURA_JANELA 400
+float LARGURA_JANELA = 600;
+float ALTURA_JANELA = 400;
 
-#define COMPRIMENTO_PESON 50
-#define ALTURA_PESON 30
+float COMPRIMENTO_PESON = 50;
+float ALTURA_PESON = 30;
 
-#define COMPRIMENTO_INIMIGO 50
-#define ALTURA_INIMIGO 50
+float COMPRIMENTO_INIMIGO = 50;
+float ALTURA_INIMIGO = 50;
 
-#define COMPRIMENTO_TIRO 20
-#define ALTURA_TIRO 20
+float COMPRIMENTO_TIRO = 20;
+float ALTURA_TIRO = 20;
 
-#define VELOCIDADE_LATERAL 0.1
-#define FATOR_DIVISAO_VELOCIDADE_INIMIGO 5      // A velocidade lateral do inimigo ser� X vezes menor que a velocidade lateral da nossa nave
-#define FATOR_MULTIPLICACAO_DESCIDA_INIMIGO 100 // Inimigo desce com uma velocidade 100 superior ao movimento lateral da nave
+float VELOCIDADE_LATERAL = 0.1;
+float FATOR_DIVISAO_VELOCIDADE_INIMIGO = 5;
+float FATOR_MULTIPLICACAO_DESCIDA_INIMIGO = 100;
 
-#define QUANTIDADE_DE_INIMIGOS 5
+int QUANTIDADE_DE_INIMIGOS = 5;
 
 float VELOCIDADE_LATERAL_INIMIGO = VELOCIDADE_LATERAL / FATOR_DIVISAO_VELOCIDADE_INIMIGO;
-
 float espaco_entre_inimigos = (LARGURA_JANELA - (COMPRIMENTO_INIMIGO * QUANTIDADE_DE_INIMIGOS)) / (QUANTIDADE_DE_INIMIGOS + 1);
 
 bool gEsquerda = false; // Movimento da nave para a esquerda
 bool gDireita = false;  // Movimento da nave para a direita
+bool gTiro = false;     // Movimento do tiro
 
-bool gTiro = false; // Movimento do tiro
-
-typedef struct
-{
-    float x;
-    float y;
-} Coordenada;
-
-typedef struct
-{
-    Coordenada inicial;
-    Coordenada incremento;
-    bool vivo;
-} Inimigo;
-
-void desenhaQuadradoIncremento(Coordenada primeira, Coordenada incremento, Color cor);
-void desenhaQuadradoAbs(Coordenada primeira, Coordenada ultima, Color cor);
-void desenhaLinha(Coordenada primeira, Coordenada ultima, Color cor);
-void desenhaTiro(Coordenada primeira);
-
-void movimentaLateralmente(SDL_Event eventos, float posicao);
-void movimentaLateralmente2(SDL_Event eventos);
-
-void movimentoInimigo(Coordenada *inimigo, Coordenada *incremento, float auxiliar_velocidade_l, int qual_inimigo);
-
-void movimentoTiro(Coordenada *tiro);
-
-Coordenada atira(SDL_Event eventos, Coordenada posicao, Coordenada incremento);
-
-bool colisaoInimigos(Coordenada obj1, Coordenada obj1_incremento, Coordenada obj2, Coordenada obj2_incremento);
+Color VERMELHO = Color(1, 0, 0);
+Color VERDE = Color(0, 1, 0);
+Color AZUL = Color(0, 0, 1);
+Color PRETO = Color(0, 0, 0);
+Color BRANCO = Color(1, 1, 1);
 
 int main(int argc, char *args[])
 {
@@ -89,15 +65,15 @@ int main(int argc, char *args[])
     SDL_WM_SetCaption("TP01_SDL", NULL);
 
     // Tamanho da janela
-    SDL_SetVideoMode(LARGURA_JANELA, ALTURA_JANELA, 32, SDL_OPENGL); // 600x400. 32 � relativo a bits por pixel
+    SDL_SetVideoMode(LARGURA_JANELA, ALTURA_JANELA, 32, SDL_OPENGL); // 600x400. 32 -> relativo a bits por pixel
 
-    // Cor inicial
-    glClearColor(1.0, 1.0, 1.0, 1.0); //preto
+    // Cor inicial -> color & opacity
+    glClearColor(PRETO.r, PRETO.g, PRETO.b, 1.0);
 
-    // �rea exibida
+    // area exibida
     glViewport(0, 0, LARGURA_JANELA, ALTURA_JANELA);
 
-    // Sombra
+    // sombra
     glShadeModel(GL_SMOOTH); //sombreamento
 
     // 2D
@@ -151,48 +127,55 @@ int main(int argc, char *args[])
         while (SDL_PollEvent(&eventos))
         {
             // Fecha com o x da janela ou com esc
-            if (eventos.type == SDL_QUIT || (eventos.type == SDL_KEYUP && eventos.key.keysym.sym == SDLK_ESCAPE))
+            if (eventos.type == SDL_QUIT ||
+                (eventos.type == SDL_KEYUP && eventos.key.keysym.sym == SDLK_ESCAPE))
             {
                 executando = false;
             }
-
             // Anda lateralmente
             else
             {
-                movimentaLateralmente(eventos, person.x);
-                coord_tiro = atira(eventos, person, person_incremento);
+                drws::movimentaLateralmente(eventos, person.x, gEsquerda, gDireita);
+                coord_tiro = drws::atira(eventos,
+                                         person,
+                                         person_incremento,
+                                         gTiro,
+                                         gEsquerda,
+                                         gDireita);
             }
         }
 
-        /// L�GICA
+        /// LOGICA
 
         /// Movimento
 
         // Movimento lateral do personagem (nave)
         if (gEsquerda == true)
         {
-            person.x -= VELOCIDADE_LATERAL; // Ajusta a velocidade lateral
+            person.x -= VELOCIDADE_LATERAL;
         }
         else if (gDireita == true)
         {
-            person.x += VELOCIDADE_LATERAL; // Ajusta a velocidade lateral
+            person.x += VELOCIDADE_LATERAL;
         }
 
         // Movimento do inimigo
         for (int i = 0; i < QUANTIDADE_DE_INIMIGOS; i++)
         {
-            movimentoInimigo(&inimigo[i].inicial, &inimigo[i].incremento, VELOCIDADE_LATERAL_INIMIGO, i);
-            if (inimigo[i].inicial.x <= ((((i + 0) * COMPRIMENTO_INIMIGO) + ((i + 0) * espaco_entre_inimigos))) || (inimigo[i].inicial.x + inimigo[i].incremento.x >= ((((i + 1) * COMPRIMENTO_INIMIGO) + ((i + 1) * espaco_entre_inimigos)) + espaco_entre_inimigos)))
+            drws::movimentoInimigo(&inimigo[i].inicial, &inimigo[i].incremento, VELOCIDADE_LATERAL_INIMIGO, i);
+            if (inimigo[i].inicial.x <= ((((i + 0) * COMPRIMENTO_INIMIGO) + ((i + 0) * espaco_entre_inimigos))) ||
+                (inimigo[i].inicial.x + inimigo[i].incremento.x >= ((((i + 1) * COMPRIMENTO_INIMIGO) + ((i + 1) * espaco_entre_inimigos)) + espaco_entre_inimigos)))
             {
                 for (int j = 0; j < QUANTIDADE_DE_INIMIGOS; j++)
                 {
-                    inimigo[j].inicial.y += VELOCIDADE_LATERAL * FATOR_MULTIPLICACAO_DESCIDA_INIMIGO; // Inimigo desce com uma velocidade 100 superior ao movimento lateral da nave
+                    // Inimigo desce com uma velocidade 100 superior ao movimento lateral da nave
+                    inimigo[j].inicial.y += VELOCIDADE_LATERAL * FATOR_MULTIPLICACAO_DESCIDA_INIMIGO;
                 }
                 VELOCIDADE_LATERAL_INIMIGO = -VELOCIDADE_LATERAL_INIMIGO;
             }
             if (inimigo[i].vivo == true)
             {
-                if (colisaoInimigos(inimigo[i].inicial, inimigo[i].incremento, person, person_incremento) == true)
+                if (drws::colisaoInimigos(inimigo[i].inicial, inimigo[i].incremento, person, person_incremento) == true)
                 {
                     executando = false; // Sai do jogo
                 }
@@ -202,7 +185,7 @@ int main(int argc, char *args[])
         // Movimento do tiro;
         if (gTiro == true)
         {
-            movimentoTiro(&coord_tiro);
+            drws::movimentoTiro(&coord_tiro, VELOCIDADE_LATERAL, gTiro);
 
             Coordenada incremento_tiro;
             incremento_tiro.x = COMPRIMENTO_TIRO;
@@ -210,7 +193,7 @@ int main(int argc, char *args[])
 
             for (int i = 0; i < QUANTIDADE_DE_INIMIGOS; i++)
             {
-                if (colisaoInimigos(coord_tiro, incremento_tiro, inimigo[i].inicial, inimigo[i].incremento) == true)
+                if (drws::colisaoInimigos(coord_tiro, incremento_tiro, inimigo[i].inicial, inimigo[i].incremento) == true)
                 {
                     if (inimigo[i].vivo == true)
                     {
@@ -221,7 +204,7 @@ int main(int argc, char *args[])
             }
         }
 
-        /// RENDERIZA��O
+        /// RENDERIZACAO
         glClear(GL_COLOR_BUFFER_BIT); //Limpa o buffer
 
         // Inicia matriz
@@ -231,7 +214,7 @@ int main(int argc, char *args[])
         glOrtho(0, LARGURA_JANELA, ALTURA_JANELA, 0, -1, 1);
 
         // Cor
-        // Op��es:
+        // Opcoes:
         // glColor3d (1 ou 0)
         // glColor3f (decimais)
         // glColor3ub (R, G, B) - 0 at� 255 cada um
@@ -245,17 +228,21 @@ int main(int argc, char *args[])
         {
             if (inimigo[i].vivo == true)
             {
-                desenhaQuadradoIncremento(inimigo[i].inicial, inimigo[i].incremento, AZUL);
+                drws::desenhaQuadradoIncremento(inimigo[i].inicial, inimigo[i].incremento, AZUL);
             }
         }
 
         // Desenha a nave do personagem
-        desenhaQuadradoIncremento(person, person_incremento, VERMELHO);
+        drws::desenhaQuadradoIncremento(person, person_incremento, VERMELHO);
 
         // Desenha tiros
         if (gTiro == true)
         {
-            desenhaTiro(coord_tiro);
+            drws::desenhaTiro(coord_tiro,
+                              COMPRIMENTO_TIRO,
+                              ALTURA_TIRO,
+                              COMPRIMENTO_PESON,
+                              BRANCO);
         }
 
         // Fecha matriz
@@ -274,230 +261,4 @@ int main(int argc, char *args[])
     SDL_Quit();
 
     return 0;
-}
-
-void desenhaQuadradoAbs(Coordenada primeira, Coordenada ultima, Color cor)
-{
-    glColor3f(cor.r, cor.g, cor.b);
-    // Desenha um pol�gono por seus v�rtices
-
-    glBegin(GL_TRIANGLE_FAN);
-    // NOVIDADE: antes os valores eram -0.5, 0.5
-    glVertex3f(primeira.x, primeira.y, 0.0);
-    glVertex3f(ultima.x, primeira.y, 0.0);
-    glVertex3f(ultima.x, ultima.y, 0.0);
-    glVertex3f(primeira.x, ultima.y, 0.0);
-    glEnd();
-}
-
-void desenhaQuadradoIncremento(Coordenada primeira, Coordenada incremento, Color cor)
-{
-    glColor3f(cor.r, cor.g, cor.b);
-    // Desenha um pol�gono por seus v�rtices
-
-    glBegin(GL_TRIANGLE_FAN);
-    // NOVIDADE: antes os valores eram -0.5, 0.5
-    glVertex3f(primeira.x, primeira.y, 0.0);
-    glVertex3f(primeira.x + incremento.x, primeira.y, 0.0);
-    glVertex3f(primeira.x + incremento.x, primeira.y + incremento.y, 0.0);
-    glVertex3f(primeira.x, primeira.y + incremento.y, 0.0);
-    glEnd();
-}
-
-void desenhaTiro(Coordenada primeira)
-{
-    Coordenada incremento;
-    incremento.x = COMPRIMENTO_TIRO;
-    incremento.y = ALTURA_TIRO;
-
-    primeira.x += (COMPRIMENTO_PESON / 2) - (incremento.x / 2);
-
-    Color cor = PRETO;
-    glColor3f(cor.r, cor.g, cor.b);
-
-    // Desenha um pol�gono por seus v�rtices
-
-    glBegin(GL_TRIANGLE_FAN);
-    // NOVIDADE: antes os valores eram -0.5, 0.5
-    glVertex3f(primeira.x, primeira.y, 0.0);
-    glVertex3f(primeira.x + incremento.x, primeira.y, 0.0);
-    glVertex3f(primeira.x + incremento.x, primeira.y + incremento.y, 0.0);
-    glVertex3f(primeira.x, primeira.y + incremento.y, 0.0);
-    glEnd();
-}
-
-void desenhaLinha(Coordenada primeira, Coordenada ultima, Color cor)
-{
-    glColor3f(cor.r, cor.g, cor.b);
-    // Desenha um pol�gono por seus vertices
-
-    glBegin(GL_LINES); // GL_POINTS, GL_LINES, GL_LINES_LOOP, GL_QUADS, GL_TRIANGLES, GL_POLIGOM
-    glVertex3f(primeira.x, primeira.y, 0.0);
-    glVertex3f(ultima.x, ultima.y, 0.0);
-    glEnd();
-}
-
-void movimentaLateralmente(SDL_Event eventos, float posicao)
-{
-    //if (posicao <= 0)
-    {
-        //gEsquerda == false;
-    }
-    //else if (posicao >= LARGURA_JANELA)
-    {
-        //gDireita == false;
-    }
-    //else
-    {
-        if (eventos.type == SDL_KEYDOWN)
-        {
-            if (eventos.key.keysym.sym == SDLK_LEFT && eventos.key.keysym.sym == SDLK_RIGHT)
-            {
-                gEsquerda = false;
-                gDireita = false;
-            }
-            else if (eventos.key.keysym.sym == SDLK_LEFT)
-            {
-                gEsquerda = true;
-            }
-            else if (eventos.key.keysym.sym == SDLK_RIGHT)
-            {
-                gDireita = true;
-            }
-        }
-        else if (eventos.type == SDL_KEYUP)
-        {
-            if (eventos.key.keysym.sym == SDLK_LEFT)
-            {
-                gEsquerda = false;
-            }
-            if (eventos.key.keysym.sym == SDLK_RIGHT)
-            {
-                gDireita = false;
-            }
-        }
-    }
-}
-
-Coordenada atira(SDL_Event eventos, Coordenada posicao, Coordenada incremento)
-{
-    //    if (eventos.type == SDL_KEYDOWN)
-    //    {
-    //        if (eventos.key.keysym.sym == SDLK_SPACE)
-    //        {
-    //            gTiro = true;
-    //            posicao.y -= incremento.y + 5;
-    //
-    //            return (posicao);
-    //        }
-    //    }
-    if (eventos.type == SDL_KEYUP && eventos.key.keysym.sym == SDLK_SPACE)
-    {
-        gTiro = true;
-        posicao.y -= incremento.y + 5;
-
-        return (posicao);
-    }
-    else
-    {
-        Coordenada origem;
-        origem.x = 0;
-        origem.y = 0;
-
-        return origem;
-    }
-}
-
-void movimentaLateralmente2(SDL_Event eventos)
-{
-    if (eventos.type == SDL_KEYDOWN)
-    {
-        //if (eventos.key.keysym.sym == SDLK_LEFT && eventos.key.keysym.sym == SDLK_RIGHT)
-        //{
-        //    gEsquerda = false;
-        //    gDireita = false;
-        //}
-        if (eventos.key.keysym.sym == SDLK_LEFT)
-        {
-            gEsquerda = true;
-        }
-        else if (eventos.key.keysym.sym == SDLK_RIGHT)
-        {
-            gDireita = true;
-        }
-    }
-    else if (eventos.type == SDL_KEYUP)
-    {
-        if (eventos.key.keysym.sym == SDLK_LEFT)
-        {
-            gEsquerda = false;
-        }
-        if (eventos.key.keysym.sym == SDLK_RIGHT)
-        {
-            gDireita = false;
-        }
-    }
-}
-
-void movimentoTiro(Coordenada *tiro)
-{
-    tiro->y += (VELOCIDADE_LATERAL * (-1));
-
-    if (tiro->y < 0)
-    {
-        gTiro = false;
-    }
-}
-
-void movimentoInimigo(Coordenada *inimigo, Coordenada *incremento, float auxiliar_velocidade_l, int qual_inimigo)
-{
-    inimigo->x += auxiliar_velocidade_l;
-}
-
-bool colisaoInimigos(Coordenada obj1, Coordenada obj1_incremento, Coordenada obj2, Coordenada obj2_incremento)
-{
-    if (obj1.y + obj1_incremento.y < obj2.y)
-    {
-        return false;
-    }
-    else if (obj1.y > obj2.y + obj2_incremento.y)
-    {
-        return false;
-    }
-    else if (obj1.x + obj1_incremento.x < obj2.x)
-    {
-        return false;
-    }
-    else if (obj1.x > obj2.x + obj2_incremento.x)
-    {
-        return false;
-    }
-    else
-    {
-        return true;
-    }
-}
-
-bool colisaoTiros(Coordenada obj1, Coordenada obj1_incremento, Coordenada obj2, Coordenada obj2_incremento)
-{
-    if (obj1.y + obj1_incremento.y < obj2.y)
-    {
-        return false;
-    }
-    else if (obj1.y > obj2.y + obj2_incremento.y)
-    {
-        return false;
-    }
-    else if (obj1.x + obj1_incremento.x < obj2.x)
-    {
-        return false;
-    }
-    else if (obj1.x > obj2.x + obj2_incremento.x)
-    {
-        return false;
-    }
-    else
-    {
-        return true;
-    }
 }

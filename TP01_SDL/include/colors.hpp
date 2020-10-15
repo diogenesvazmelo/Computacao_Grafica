@@ -1,3 +1,6 @@
+#ifndef COLORS_HPP
+#define COLORS_HPP
+
 struct Color
 {
   float r, g, b;
@@ -7,14 +10,11 @@ struct Color
     g = _g;
     b = _b;
   }
+  Color(const Color &c)
+  {
+    r = c.r;
+    g = c.g;
+    b = c.b;
+  }
 };
-
-Color VERMELHO = Color(1, 0, 0);
-Color VERDE = Color(0, 1, 0);
-Color AZUL = Color(0, 0, 1);
-Color PRETO = Color(0, 0, 0);
-Color CIANO = Color(0, 1, 1);
-Color MAGENTA = Color(1, 0, 1);
-Color AMARELO = Color(1, 1, 0);
-Color CINZA = Color(0.6, 0.6, 0.6);
-Color BRANCO = Color(1, 1, 1);
+#endif
