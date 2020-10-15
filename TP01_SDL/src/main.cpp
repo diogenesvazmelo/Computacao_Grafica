@@ -13,7 +13,7 @@
 #endif
 
 #include <iostream>
-#include "include/cores.hpp"
+#include "../include/colors.hpp"
 
 #define LARGURA_JANELA 600
 #define ALTURA_JANELA 400
@@ -55,9 +55,9 @@ typedef struct
     bool vivo;
 } Inimigo;
 
-void desenhaQuadradoIncremento(Coordenada primeira, Coordenada incremento, Cores cor);
-void desenhaQuadradoAbs(Coordenada primeira, Coordenada ultima, Cores cor);
-void desenhaLinha(Coordenada primeira, Coordenada ultima, Cores cor);
+void desenhaQuadradoIncremento(Coordenada primeira, Coordenada incremento, Color cor);
+void desenhaQuadradoAbs(Coordenada primeira, Coordenada ultima, Color cor);
+void desenhaLinha(Coordenada primeira, Coordenada ultima, Color cor);
 void desenhaTiro(Coordenada primeira);
 
 void movimentaLateralmente(SDL_Event eventos, float posicao);
@@ -245,12 +245,12 @@ int main(int argc, char *args[])
         {
             if (inimigo[i].vivo == true)
             {
-                desenhaQuadradoIncremento(inimigo[i].inicial, inimigo[i].incremento, Azul());
+                desenhaQuadradoIncremento(inimigo[i].inicial, inimigo[i].incremento, AZUL);
             }
         }
 
         // Desenha a nave do personagem
-        desenhaQuadradoIncremento(person, person_incremento, Vermelho());
+        desenhaQuadradoIncremento(person, person_incremento, VERMELHO);
 
         // Desenha tiros
         if (gTiro == true)
@@ -276,9 +276,9 @@ int main(int argc, char *args[])
     return 0;
 }
 
-void desenhaQuadradoAbs(Coordenada primeira, Coordenada ultima, Cores cor)
+void desenhaQuadradoAbs(Coordenada primeira, Coordenada ultima, Color cor)
 {
-    glColor3f(cor.cor1, cor.cor2, cor.cor3);
+    glColor3f(cor.r, cor.g, cor.b);
     // Desenha um pol�gono por seus v�rtices
 
     glBegin(GL_TRIANGLE_FAN);
@@ -290,9 +290,9 @@ void desenhaQuadradoAbs(Coordenada primeira, Coordenada ultima, Cores cor)
     glEnd();
 }
 
-void desenhaQuadradoIncremento(Coordenada primeira, Coordenada incremento, Cores cor)
+void desenhaQuadradoIncremento(Coordenada primeira, Coordenada incremento, Color cor)
 {
-    glColor3f(cor.cor1, cor.cor2, cor.cor3);
+    glColor3f(cor.r, cor.g, cor.b);
     // Desenha um pol�gono por seus v�rtices
 
     glBegin(GL_TRIANGLE_FAN);
@@ -312,8 +312,8 @@ void desenhaTiro(Coordenada primeira)
 
     primeira.x += (COMPRIMENTO_PESON / 2) - (incremento.x / 2);
 
-    Cores cor = Preto();
-    glColor3f(cor.cor1, cor.cor2, cor.cor3);
+    Color cor = PRETO;
+    glColor3f(cor.r, cor.g, cor.b);
 
     // Desenha um pol�gono por seus v�rtices
 
@@ -326,10 +326,10 @@ void desenhaTiro(Coordenada primeira)
     glEnd();
 }
 
-void desenhaLinha(Coordenada primeira, Coordenada ultima, Cores cor)
+void desenhaLinha(Coordenada primeira, Coordenada ultima, Color cor)
 {
-    glColor3f(cor.cor1, cor.cor2, cor.cor3);
-    // Desenha um pol�gono por seus v�rtices
+    glColor3f(cor.r, cor.g, cor.b);
+    // Desenha um pol�gono por seus vertices
 
     glBegin(GL_LINES); // GL_POINTS, GL_LINES, GL_LINES_LOOP, GL_QUADS, GL_TRIANGLES, GL_POLIGOM
     glVertex3f(primeira.x, primeira.y, 0.0);

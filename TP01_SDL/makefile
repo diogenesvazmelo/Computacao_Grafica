@@ -7,6 +7,7 @@ TARGET		:= game
 INCLUDE 	:= ./include
 SRC 			:= 					\
 	$(wildcard ./*.cpp) \
+	$(wildcard ./src/*.cpp) \
 
 OBJECTS		:= $(SRC:%.cpp=$(OBJ_DIR)/%.o)
 
