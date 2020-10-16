@@ -5,8 +5,8 @@ OBJ_DIR 	:= ./obj
 APP_DIR		:= ./bin
 TARGET		:= game
 INCLUDE 	:= ./include
-SRC 			:= 					\
-	$(wildcard ./*.cpp) \
+SRC 			:= 							\
+	$(wildcard ./*.cpp) 		\
 	$(wildcard ./src/*.cpp) \
 
 OBJECTS		:= $(SRC:%.cpp=$(OBJ_DIR)/%.o)

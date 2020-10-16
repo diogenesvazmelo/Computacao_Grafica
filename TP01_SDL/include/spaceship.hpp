@@ -7,6 +7,7 @@ private:
   float x, y;   // middle of the blast
   float length; // top of blast is (x,y+length/2)
   float speed;
+  float thickness;
 
 public:
   Blast();
@@ -26,6 +27,9 @@ public:
   float getSpeed();
   void setSpeed(float _speed);
 
+  float getThickness();
+  void setThickness(float _thickness);
+
   void moveUp();
   void moveDown();
 };
@@ -36,7 +40,6 @@ private:
   float x, y;
   float height, width;
   float speed;
-  Blast *b; // only one fire per ship
   bool destroyed;
 
 public:
@@ -60,10 +63,6 @@ public:
 
   float getSpeed();
   void setSpeed(float _speed);
-
-  bool blastExists();
-  Blast *getBlast();
-  void fireBlast();
 
   bool isDestroyed();
   void setDestroyed(bool _destroyed);

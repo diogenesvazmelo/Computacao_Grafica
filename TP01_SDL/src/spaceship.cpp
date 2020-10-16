@@ -1,8 +1,9 @@
 #include "../include/spaceship.hpp"
 #include <cstddef>
 
-const float DEFAULT_BLAST_LENGTH = 10.0;
-const float DEFAULT_BLAST_SPEED = 2.0;
+const float DEFAULT_BLAST_LENGTH = 20.0;
+const float DEFAULT_BLAST_SPEED = 4.0;
+const float DEFAULT_BLAST_THICKNESS = 5.0;
 
 // BLAST SECTION
 
@@ -16,6 +17,7 @@ Blast::Blast(float _x, float _y)
   y = _y;
   length = DEFAULT_BLAST_LENGTH;
   speed = DEFAULT_BLAST_SPEED;
+  thickness = DEFAULT_BLAST_THICKNESS;
 }
 Blast::Blast(float _x, float _y, float _length)
 {
@@ -23,6 +25,7 @@ Blast::Blast(float _x, float _y, float _length)
   y = _y;
   length = _length;
   speed = DEFAULT_BLAST_SPEED;
+  thickness = DEFAULT_BLAST_THICKNESS;
 }
 Blast::Blast(float _x, float _y, float _length, float _speed)
 {
@@ -30,6 +33,7 @@ Blast::Blast(float _x, float _y, float _length, float _speed)
   y = _y;
   length = _length;
   speed = _speed;
+  thickness = DEFAULT_BLAST_THICKNESS;
 }
 
 float Blast::getX()
@@ -67,24 +71,32 @@ void Blast::setSpeed(float _speed)
   speed = _speed;
 }
 
+float Blast::getThickness()
+{
+  return thickness;
+}
+void Blast::setThickness(float _thickness)
+{
+  thickness = _thickness;
+}
+
 void Blast::moveUp()
 {
-  y -= speed;
+  y -= speed / 2;
 }
 void Blast::moveDown()
 {
-  y += speed;
+  y += speed / 2;
 }
 
 // BLAST FINISHED
-const float DEFAULT_SPACESHIP_SPEED = 1.0;
+const float DEFAULT_SPACESHIP_SPEED = 5.0;
 const float DEFAULT_SPACESHIP_HEIGHT = 50.0;
 const float DEFAULT_SPACESHIP_WIDTH = 50.0;
 
 Spaceship::Spaceship()
 {
   x = y = speed = height = width = 0.0;
-  b = NULL;
   destroyed = false;
 }
 Spaceship::Spaceship(float _x, float _y)
@@ -94,7 +106,6 @@ Spaceship::Spaceship(float _x, float _y)
   height = DEFAULT_SPACESHIP_HEIGHT;
   width = DEFAULT_SPACESHIP_WIDTH;
   speed = DEFAULT_SPACESHIP_SPEED;
-  b = NULL;
 }
 Spaceship::Spaceship(float _x, float _y, float _height, float _width)
 {
@@ -103,7 +114,6 @@ Spaceship::Spaceship(float _x, float _y, float _height, float _width)
   height = _height;
   width = _width;
   speed = DEFAULT_SPACESHIP_SPEED;
-  b = NULL;
 }
 Spaceship::Spaceship(float _x, float _y, float _speed)
 {
@@ -112,7 +122,6 @@ Spaceship::Spaceship(float _x, float _y, float _speed)
   height = DEFAULT_SPACESHIP_HEIGHT;
   width = DEFAULT_SPACESHIP_WIDTH;
   speed = _speed;
-  b = NULL;
 }
 Spaceship::Spaceship(float _x, float _y, float _height, float _width, float _speed)
 {
@@ -121,7 +130,6 @@ Spaceship::Spaceship(float _x, float _y, float _height, float _width, float _spe
   height = _height;
   width = _width;
   speed = _speed;
-  b = NULL;
 }
 
 float Spaceship::getX()
@@ -167,24 +175,6 @@ float Spaceship::getSpeed()
 void Spaceship::setSpeed(float _speed)
 {
   speed = _speed;
-}
-
-bool Spaceship::blastExists()
-{
-  return (b == NULL) ? false : true;
-}
-Blast *Spaceship::getBlast()
-{
-  return b;
-}
-// TODO: implements firing shot !
-void Spaceship::fireBlast()
-{
-  if (b == NULL)
-  {
-    Blast blast = Blast(x, y - height);
-    b = &blast;
-  }
 }
 
 bool Spaceship::isDestroyed()

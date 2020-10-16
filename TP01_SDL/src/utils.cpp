@@ -32,14 +32,22 @@ void utils::checkPlayerDirection(SDL_Event event, std::vector<bool> &playerDirec
   }
 }
 
-bool utils::shot(SDL_Event event)
+void utils::shot(SDL_Event event, bool &blastExists, Blast &b, Spaceship sp)
 {
-  return (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE);
+  if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE)
+  {
+    if (blastExists == false)
+    {
+      b = Blast(sp.getX(), sp.getY());
+      b.setThickness(5.0); // TODO: why do i need to do this?
+    }
+    blastExists = true;
+  }
 }
 
 bool utils::collision(Spaceship player, Spaceship enemy)
 {
-  // [bottom left, bottom right, top right, top left]
+
   float p[4] = {
       player.getX() - player.getWidth() / 2,
       player.getX() + player.getWidth() / 2,
@@ -53,7 +61,13 @@ bool utils::collision(Spaceship player, Spaceship enemy)
       enemy.getY() + enemy.getHeight() / 2,
   };
 
-  //TODO CONFLICT
+  // TODO: CONFLICT
+  if (p[0] < e[1] &&
+      p[1] > e[0] &&
+      p[2] < e[3] &&
+      p[3] > e[2])
+    return true;
+
   return false;
 }
 

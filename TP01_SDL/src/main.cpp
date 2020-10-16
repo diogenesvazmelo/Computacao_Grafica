@@ -73,10 +73,12 @@ int main(int argc, char *args[])
     // TODO: REMOVE THIS
     std::vector<bool> playerDirection(2, false);
     utils::STATES GAME_STATE = utils::PLAYING;
+    bool blastExists = false;
     bool isPaused = false;
 
     // Nave -> (x, y, h, w)
-    Spaceship player = Spaceship((WINDOW_WIDTH / 2), WINDOW_HEIGHT - 50, DEFAULT_SHIP_WIDTH, 30.0, 5);
+    Spaceship player = Spaceship((WINDOW_WIDTH / 2), WINDOW_HEIGHT - 50, 30.0, DEFAULT_SHIP_WIDTH, 5);
+    Blast playerBlast;
 
     // Inimigos
     std::vector<Spaceship> enemies(ENEMY_AMOUNT);
@@ -94,15 +96,12 @@ int main(int argc, char *args[])
     /// Loop do Jogo
     while (executando)
     {
-        // is space pressed
-        bool attemptShot = false;
-
         // Eventos - teclado
         while (SDL_PollEvent(&eventos))
         {
             utils::checkState(eventos, GAME_STATE, isPaused);
             utils::checkPlayerDirection(eventos, playerDirection);
-            attemptShot = utils::shot(eventos);
+            utils::shot(eventos, blastExists, playerBlast, player);
         }
 
         switch (GAME_STATE)
@@ -114,17 +113,25 @@ int main(int argc, char *args[])
                 player.moveLeft();
             if (playerDirection[1] && player.getX() + player.getSpeed() + player.getWidth() / 2 < WINDOW_WIDTH)
                 player.moveRight();
+            if (blastExists)
+            {
+                playerBlast.moveUp();
+                // TODO: check out of bounds
+                // TODO: check colission with enemies
+            }
 
             for (int i = 0; i < ENEMY_AMOUNT; i++)
             {
-                utils::enemyMovement(enemies[i], origCoord[i] - DEFAULT_PADDING, origCoord[i] + DEFAULT_PADDING, ENEMY_DIRECTION);
-                if (utils::outOfBounds(enemies[i], WINDOW_WIDTH, WINDOW_HEIGHT))
-                    GAME_STATE = utils::GAME_OVER;
+                if (!enemies[i].isDestroyed())
+                {
+                    utils::enemyMovement(enemies[i], origCoord[i] - DEFAULT_PADDING, origCoord[i] + DEFAULT_PADDING, ENEMY_DIRECTION);
+                    if (utils::outOfBounds(enemies[i], WINDOW_WIDTH, WINDOW_HEIGHT))
+                        GAME_STATE = utils::GAME_OVER;
+                    if (utils::collision(player, enemies[i]))
+                        GAME_STATE = utils::GAME_OVER;
+                }
             }
-            if (attemptShot)
-                player.fireBlast();
-            if (player.blastExists())
-                player.getBlast()->moveUp();
+
             // TODO: check if enemy got to the bottom of the screen.
 
             drws::resetScreen(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -140,20 +147,10 @@ int main(int argc, char *args[])
             // Desenha a nave do personagem
             drws::drawsSpaceship(player, VERMELHO);
 
-            if (player.blastExists())
+            if (blastExists)
             {
-                drws::drawsBlast(*(player.getBlast()), BRANCO);
+                drws::drawsBlast(playerBlast, BRANCO);
             }
-
-            // // Desenha tiros
-            // if (gTiro == true)
-            // {
-            //     drws::desenhaTiro(coord_tiro,
-            //                       COMPRIMENTO_TIRO,
-            //                       ALTURA_TIRO,
-            //                       COMPRIMENTO_PERSON,
-            //                       BRANCO);
-            // }
             break;
         }
         case utils::PAUSED:

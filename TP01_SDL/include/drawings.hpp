@@ -9,6 +9,7 @@
 #endif
 
 #include "../include/spaceship.hpp"
+#include <iostream>
 
 struct Coordenada
 {
@@ -27,11 +28,6 @@ namespace drws
 {
   void resetScreen(int width, int height);
   void drawsSpaceship(Spaceship sp, Color cor);
-  void desenhaTiro(Coordenada primeira,
-                   float &COMPRIMENTO_TIRO,
-                   float &ALTURA_TIRO,
-                   float &COMPRIMENTO_PERSON,
-                   Color &c);
   void drawsBlast(Blast b, Color c);
 } // namespace drws
 
