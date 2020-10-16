@@ -76,7 +76,7 @@ int main(int argc, char *args[])
     bool isPaused = false;
 
     // Nave -> (x, y, h, w)
-    Spaceship player = Spaceship((WINDOW_WIDTH / 2), WINDOW_HEIGHT - 50, DEFAULT_SHIP_WIDTH, 30.0);
+    Spaceship player = Spaceship((WINDOW_WIDTH / 2), WINDOW_HEIGHT - 50, DEFAULT_SHIP_WIDTH, 30.0, 5);
 
     // Inimigos
     std::vector<Spaceship> enemies(ENEMY_AMOUNT);
@@ -109,20 +109,17 @@ int main(int argc, char *args[])
         {
         case utils::PLAYING:
         {
-            if (playerDirection[0] && player.getX() - player.getSpeed() > 0)
-                player.moveLeft();
-            if (playerDirection[1] && player.getX() + player.getSpeed() < WINDOW_WIDTH)
-                player.moveRight();
-
             /// LOGICA
+            if (playerDirection[0] && player.getX() - player.getSpeed() - player.getWidth() / 2 > 0)
+                player.moveLeft();
+            if (playerDirection[1] && player.getX() + player.getSpeed() + player.getWidth() / 2 < WINDOW_WIDTH)
+                player.moveRight();
 
             for (int i = 0; i < ENEMY_AMOUNT; i++)
             {
                 utils::enemyMovement(enemies[i], origCoord[i] - DEFAULT_PADDING, origCoord[i] + DEFAULT_PADDING, ENEMY_DIRECTION);
                 if (utils::outOfBounds(enemies[i], WINDOW_WIDTH, WINDOW_HEIGHT))
-                {
                     GAME_STATE = utils::GAME_OVER;
-                }
             }
             if (attemptShot)
                 player.fireBlast();
