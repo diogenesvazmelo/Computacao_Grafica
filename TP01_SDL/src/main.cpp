@@ -109,9 +109,9 @@ int main(int argc, char *args[])
         {
         case utils::PLAYING:
         {
-            if (playerDirection[0])
+            if (playerDirection[0] && player.getX() - player.getSpeed() > 0)
                 player.moveLeft();
-            if (playerDirection[1])
+            if (playerDirection[1] && player.getX() + player.getSpeed() < WINDOW_WIDTH)
                 player.moveRight();
 
             /// LOGICA
@@ -121,7 +121,7 @@ int main(int argc, char *args[])
                 utils::enemyMovement(enemies[i], origCoord[i] - DEFAULT_PADDING, origCoord[i] + DEFAULT_PADDING, ENEMY_DIRECTION);
                 if (utils::outOfBounds(enemies[i], WINDOW_WIDTH, WINDOW_HEIGHT))
                 {
-                    GAME_STATE = utils::PAUSED;
+                    GAME_STATE = utils::GAME_OVER;
                 }
             }
             if (attemptShot)
