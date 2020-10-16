@@ -25,6 +25,6 @@ namespace utils
   bool shot(SDL_Event event);
 
   bool collision(Spaceship player, Spaceship enemy);
-  void enemyDance(Spaceship sp, float leftLimit, float rightLimit, bool direction);
+  void enemyMovement(Spaceship &sp, float leftLimit, float rightLimit, bool &direction);
 } // namespace utils
 #endif

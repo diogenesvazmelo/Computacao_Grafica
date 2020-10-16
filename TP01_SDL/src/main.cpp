@@ -77,10 +77,10 @@ int main(int argc, char *args[])
 
     // Nave -> (x, y, h, w)
     Spaceship player = Spaceship((WINDOW_WIDTH / 2), WINDOW_HEIGHT - 50, DEFAULT_SHIP_WIDTH, 30.0);
-    // TODO: check if window is upsidedown, 0,0 at the top!
 
     // Inimigos
     std::vector<Spaceship> enemies(ENEMY_AMOUNT);
+    std::vector<float> origCoord(ENEMY_AMOUNT);
     for (int i = 0; i < ENEMY_AMOUNT; i++)
     {
         // adapts the space according to the enemy amount
@@ -88,6 +88,7 @@ int main(int argc, char *args[])
         enem_x += (WINDOW_WIDTH - (ENEMY_AMOUNT * DEFAULT_ENEMY_SPACE)) / 2;
 
         enemies[i] = Spaceship(enem_x, DEFAULT_SHIP_HEIGHT + 30);
+        origCoord[i] = enem_x;
     }
 
     /// Loop do Jogo
@@ -114,6 +115,10 @@ int main(int argc, char *args[])
                 player.moveRight();
 
             /// LOGICA
+
+            for (int i = 0; i < ENEMY_AMOUNT; i++)
+                utils::enemyMovement(enemies[i], origCoord[i] - DEFAULT_PADDING, origCoord[i] + DEFAULT_PADDING, ENEMY_DIRECTION);
+
             if (attemptShot)
                 player.fireBlast();
             if (player.blastExists())
@@ -129,12 +134,13 @@ int main(int argc, char *args[])
                     drws::drawsSpaceship(enemies[i], AZUL);
                 enemies[i].moveDown();
             }
+
             // Desenha a nave do personagem
             drws::drawsSpaceship(player, VERMELHO);
 
             if (player.blastExists())
             {
-                drws::drawsBlast(*(player.getBlast()), AZUL);
+                drws::drawsBlast(*(player.getBlast()), BRANCO);
             }
 
             // // Desenha tiros

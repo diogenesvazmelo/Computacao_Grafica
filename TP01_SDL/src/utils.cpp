@@ -38,5 +38,41 @@ bool utils::shot(SDL_Event event)
 }
 
 //TODO
-// bool collision(Spaceship player, Spaceship enemy);
-// void enemyDance(Spaceship sp, float leftLimit, float rightLimit, bool direction);
+bool utils::collision(Spaceship player, Spaceship enemy)
+{
+  // [bottom left, bottom right, top right, top left]
+  float p[4] = {
+      player.getX() - player.getWidth() / 2,
+      player.getX() + player.getWidth() / 2,
+      player.getY() - player.getHeight() / 2,
+      player.getY() + player.getHeight() / 2,
+  };
+  float e[4] = {
+      enemy.getX() - enemy.getWidth() / 2,
+      enemy.getX() + enemy.getWidth() / 2,
+      enemy.getY() - enemy.getHeight() / 2,
+      enemy.getY() + enemy.getHeight() / 2,
+  };
+
+  //TODO CONFLICT
+  return false;
+}
+
+void utils::enemyMovement(Spaceship &sp, float leftLimit, float rightLimit, bool &direction)
+{
+  if (direction)
+    sp.moveRight();
+  else
+    sp.moveLeft();
+
+  if (sp.getX() + sp.getSpeed() > rightLimit)
+  {
+    sp.setX(rightLimit);
+    direction = !direction;
+  }
+  else if (sp.getX() + sp.getSpeed() < leftLimit)
+  {
+    sp.setX(leftLimit);
+    direction = !direction;
+  }
+}

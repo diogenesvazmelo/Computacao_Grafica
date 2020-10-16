@@ -2,7 +2,7 @@
 #include <cstddef>
 
 const float DEFAULT_BLAST_LENGTH = 10.0;
-const float DEFAULT_BLAST_SPEED = 5.0;
+const float DEFAULT_BLAST_SPEED = 2.0;
 
 // BLAST SECTION
 
@@ -77,7 +77,7 @@ void Blast::moveDown()
 }
 
 // BLAST FINISHED
-const float DEFAULT_SPACESHIP_SPEED = 2.0;
+const float DEFAULT_SPACESHIP_SPEED = 1.0;
 const float DEFAULT_SPACESHIP_HEIGHT = 50.0;
 const float DEFAULT_SPACESHIP_WIDTH = 50.0;
 
