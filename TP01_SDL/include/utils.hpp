@@ -20,7 +20,11 @@ namespace utils
     GAME_OVER,
     EXIT
   };
-  void checkExit(SDL_Event event, STATES &game_state, bool &isPaused);
+  void checkState(SDL_Event event, STATES &game_state, bool &isPaused);
   void checkPlayerDirection(SDL_Event event, std::vector<bool> &playerDirection);
+  bool shot(SDL_Event event);
+
+  bool collision(Spaceship player, Spaceship enemy);
+  void enemyDance(Spaceship sp, float leftLimit, float rightLimit, bool direction);
 } // namespace utils
 #endif

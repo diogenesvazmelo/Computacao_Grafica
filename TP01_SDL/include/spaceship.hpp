@@ -14,6 +14,12 @@ public:
   Blast(float _x, float _y, float _length);
   Blast(float _x, float _y, float _length, float _speed);
 
+  float getX();
+  void setX(float _x);
+
+  float getY();
+  void setY(float _y);
+
   float getLength();
   void setLength(float _length);
 
@@ -55,7 +61,8 @@ public:
   float getSpeed();
   void setSpeed(float _speed);
 
-  Blast getBlast();
+  bool blastExists();
+  Blast *getBlast();
   void fireBlast();
 
   bool isDestroyed();

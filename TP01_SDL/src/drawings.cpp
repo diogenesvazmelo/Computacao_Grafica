@@ -12,9 +12,9 @@ void drws::resetScreen(int width, int height)
   glOrtho(0, width, height, 0, -1, 1);
 }
 
-void drws::desenhaQuadradoIncremento(Spaceship sp, Color cor)
+void drws::drawsSpaceship(Spaceship sp, Color c)
 {
-  glColor3f(cor.r, cor.g, cor.b);
+  glColor3f(c.r, c.g, c.b);
   // Desenha um poligono por seus v�rtices
 
   float points[4] = {
@@ -44,16 +44,25 @@ void drws::desenhaTiro(Coordenada primeira,
 
   primeira.x += (COMPRIMENTO_PERSON / 2) - (incremento.x / 2);
 
-  Color cor = c;
-  glColor3f(cor.r, cor.g, cor.b);
+  glColor3f(c.r, c.g, c.b);
 
-  // Desenha um pol�gono por seus v�rtices
-
+  // Desenha um poligono por seus vertices
   glBegin(GL_TRIANGLE_FAN);
-  // NOVIDADE: antes os valores eram -0.5, 0.5
   glVertex3f(primeira.x, primeira.y, 0.0);
   glVertex3f(primeira.x + incremento.x, primeira.y, 0.0);
   glVertex3f(primeira.x + incremento.x, primeira.y + incremento.y, 0.0);
   glVertex3f(primeira.x, primeira.y + incremento.y, 0.0);
+  glEnd();
+}
+
+void drws::drawsBlast(Blast b, Color c)
+{
+  glColor3f(c.r, c.g, c.b);
+  float thickness = 20.0;
+  glBegin(GL_TRIANGLE_STRIP);
+  glVertex3f(b.getX() - thickness / 2, b.getY() - b.getLength() / 2, 0.0);
+  glVertex3f(b.getX() + thickness / 2, b.getY() - b.getLength() / 2, 0.0);
+  glVertex3f(b.getX() - thickness / 2, b.getY() + b.getLength() / 2, 0.0);
+  glVertex3f(b.getX() + thickness / 2, b.getY() + b.getLength() / 2, 0.0);
   glEnd();
 }

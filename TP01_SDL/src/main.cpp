@@ -34,9 +34,6 @@ Color AZUL = Color(0, 0, 1);
 Color PRETO = Color(0, 0, 0);
 Color BRANCO = Color(1, 1, 1);
 
-utils::STATES GAME_STATE = utils::PLAYING;
-bool isPaused = false;
-
 int main(int argc, char *args[])
 {
     SDL_Init(SDL_INIT_EVERYTHING);
@@ -70,8 +67,13 @@ int main(int argc, char *args[])
     glDisable(GL_DEPTH_TEST);
     //-----------------------------------------------------------------
 
+    // VARIABLES
     bool executando = true;
     SDL_Event eventos;
+    // TODO: REMOVE THIS
+    std::vector<bool> playerDirection(2, false);
+    utils::STATES GAME_STATE = utils::PLAYING;
+    bool isPaused = false;
 
     // Nave -> (x, y, h, w)
     Spaceship player = Spaceship((WINDOW_WIDTH / 2), WINDOW_HEIGHT - 50, DEFAULT_SHIP_WIDTH, 30.0);
@@ -88,16 +90,18 @@ int main(int argc, char *args[])
         enemies[i] = Spaceship(enem_x, DEFAULT_SHIP_HEIGHT + 30);
     }
 
-    // TODO: REMOVE THIS
-    std::vector<bool> playerDirection(2, false);
     /// Loop do Jogo
     while (executando)
     {
+        // is space pressed
+        bool attemptShot = false;
+
         // Eventos - teclado
         while (SDL_PollEvent(&eventos))
         {
-            utils::checkExit(eventos, GAME_STATE, isPaused);
+            utils::checkState(eventos, GAME_STATE, isPaused);
             utils::checkPlayerDirection(eventos, playerDirection);
+            attemptShot = utils::shot(eventos);
         }
 
         switch (GAME_STATE)
@@ -110,6 +114,10 @@ int main(int argc, char *args[])
                 player.moveRight();
 
             /// LOGICA
+            if (attemptShot)
+                player.fireBlast();
+            if (player.blastExists())
+                player.getBlast()->moveUp();
             // TODO: check if enemy got to the bottom of the screen.
 
             drws::resetScreen(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -118,11 +126,16 @@ int main(int argc, char *args[])
             for (int i = 0; i < ENEMY_AMOUNT; i++)
             {
                 if (!enemies[i].isDestroyed())
-                    drws::desenhaQuadradoIncremento(enemies[i], AZUL);
-                enemies[i].moveUp();
+                    drws::drawsSpaceship(enemies[i], AZUL);
+                enemies[i].moveDown();
             }
             // Desenha a nave do personagem
-            drws::desenhaQuadradoIncremento(player, VERMELHO);
+            drws::drawsSpaceship(player, VERMELHO);
+
+            if (player.blastExists())
+            {
+                drws::drawsBlast(*(player.getBlast()), AZUL);
+            }
 
             // // Desenha tiros
             // if (gTiro == true)
@@ -140,7 +153,7 @@ int main(int argc, char *args[])
             //   Spaceship(float _x, float _y, float _height, float _width);
             Spaceship teste = Spaceship(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 300.0, 300.0);
             drws::resetScreen(WINDOW_WIDTH, WINDOW_HEIGHT);
-            drws::desenhaQuadradoIncremento(teste, BRANCO);
+            drws::drawsSpaceship(teste, BRANCO);
             break;
         }
         case utils::GAME_OVER:
@@ -148,7 +161,7 @@ int main(int argc, char *args[])
             //   Spaceship(float _x, float _y, float _height, float _width);
             Spaceship teste = Spaceship(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 300.0, 300.0);
             drws::resetScreen(WINDOW_WIDTH, WINDOW_HEIGHT);
-            drws::desenhaQuadradoIncremento(teste, VERDE);
+            drws::drawsSpaceship(teste, VERDE);
             break;
         }
         case utils::EXIT:

@@ -26,12 +26,13 @@ struct Inimigo
 namespace drws
 {
   void resetScreen(int width, int height);
-  void desenhaQuadradoIncremento(Spaceship sp, Color cor);
+  void drawsSpaceship(Spaceship sp, Color cor);
   void desenhaTiro(Coordenada primeira,
                    float &COMPRIMENTO_TIRO,
                    float &ALTURA_TIRO,
                    float &COMPRIMENTO_PERSON,
                    Color &c);
+  void drawsBlast(Blast b, Color c);
 } // namespace drws
 
 #endif

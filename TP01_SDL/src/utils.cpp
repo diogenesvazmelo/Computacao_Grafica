@@ -1,6 +1,6 @@
 #include "../include/utils.hpp"
 
-void utils::checkExit(SDL_Event event, STATES &game_state, bool &isPaused)
+void utils::checkState(SDL_Event event, STATES &game_state, bool &isPaused)
 {
   if (event.type == SDL_QUIT || event.key.keysym.sym == SDLK_ESCAPE)
   {
@@ -31,3 +31,12 @@ void utils::checkPlayerDirection(SDL_Event event, std::vector<bool> &playerDirec
     playerDirection[1] = false;
   }
 }
+
+bool utils::shot(SDL_Event event)
+{
+  return (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE);
+}
+
+//TODO
+// bool collision(Spaceship player, Spaceship enemy);
+// void enemyDance(Spaceship sp, float leftLimit, float rightLimit, bool direction);

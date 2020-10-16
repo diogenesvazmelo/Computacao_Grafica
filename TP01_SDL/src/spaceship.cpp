@@ -1,7 +1,7 @@
 #include "../include/spaceship.hpp"
 #include <cstddef>
 
-const float DEFAULT_BLAST_LENGTH = 20.0;
+const float DEFAULT_BLAST_LENGTH = 10.0;
 const float DEFAULT_BLAST_SPEED = 5.0;
 
 // BLAST SECTION
@@ -32,6 +32,23 @@ Blast::Blast(float _x, float _y, float _length, float _speed)
   speed = _speed;
 }
 
+float Blast::getX()
+{
+  return x;
+}
+void Blast::setX(float _x)
+{
+  x = _x;
+}
+float Blast::getY()
+{
+  return y;
+}
+void Blast::setY(float _y)
+{
+  y = _y;
+}
+
 float Blast::getLength()
 {
   return length;
@@ -52,11 +69,11 @@ void Blast::setSpeed(float _speed)
 
 void Blast::moveUp()
 {
-  y += speed;
+  y -= speed;
 }
 void Blast::moveDown()
 {
-  y -= speed;
+  y += speed;
 }
 
 // BLAST FINISHED
@@ -152,13 +169,22 @@ void Spaceship::setSpeed(float _speed)
   speed = _speed;
 }
 
-Blast Spaceship::getBlast()
+bool Spaceship::blastExists()
 {
-  return *b;
+  return (b == NULL) ? false : true;
+}
+Blast *Spaceship::getBlast()
+{
+  return b;
 }
 // TODO: implements firing shot !
-void fireBlast()
+void Spaceship::fireBlast()
 {
+  if (b == NULL)
+  {
+    Blast blast = Blast(x, y - height);
+    b = &blast;
+  }
 }
 
 bool Spaceship::isDestroyed()
@@ -180,9 +206,11 @@ void Spaceship::moveRight()
 }
 void Spaceship::moveDown()
 {
-  y -= speed / 4;
+  y += speed / 4;
 }
 void Spaceship::moveUp()
 {
-  y += speed / 4;
+  y -= speed / 4;
 }
+
+//TODO: maybe remove blast from inside the spaceship?
