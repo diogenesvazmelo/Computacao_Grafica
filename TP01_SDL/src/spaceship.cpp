@@ -180,9 +180,9 @@ void Spaceship::moveRight()
 }
 void Spaceship::moveDown()
 {
-  y -= speed / 2;
+  y -= speed / 4;
 }
 void Spaceship::moveUp()
 {
-  y += speed / 2;
+  y += speed / 4;
 }

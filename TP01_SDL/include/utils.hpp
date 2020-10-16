@@ -13,7 +13,14 @@
 
 namespace utils
 {
-  bool checkExit(SDL_Event event);
+  enum STATES
+  {
+    PLAYING,
+    PAUSED,
+    GAME_OVER,
+    EXIT
+  };
+  void checkExit(SDL_Event event, STATES &game_state, bool &isPaused);
   void checkPlayerDirection(SDL_Event event, std::vector<bool> &playerDirection);
 } // namespace utils
 #endif

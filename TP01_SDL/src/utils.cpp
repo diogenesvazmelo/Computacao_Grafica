@@ -1,9 +1,16 @@
 #include "../include/utils.hpp"
 
-bool utils::checkExit(SDL_Event event)
+void utils::checkExit(SDL_Event event, STATES &game_state, bool &isPaused)
 {
-  return event.type == SDL_QUIT ||
-         (event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE);
+  if (event.type == SDL_QUIT || event.key.keysym.sym == SDLK_ESCAPE)
+  {
+    game_state = utils::EXIT;
+  }
+  if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_p)
+  {
+    game_state = (isPaused) ? utils::PLAYING : utils::PAUSED;
+    isPaused = !isPaused;
+  }
 }
 
 void utils::checkPlayerDirection(SDL_Event event, std::vector<bool> &playerDirection)

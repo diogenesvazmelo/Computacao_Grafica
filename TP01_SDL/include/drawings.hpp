@@ -25,6 +25,7 @@ struct Inimigo
 
 namespace drws
 {
+  void resetScreen(int width, int height);
   void desenhaQuadradoIncremento(Spaceship sp, Color cor);
   void desenhaTiro(Coordenada primeira,
                    float &COMPRIMENTO_TIRO,

@@ -34,6 +34,9 @@ Color AZUL = Color(0, 0, 1);
 Color PRETO = Color(0, 0, 0);
 Color BRANCO = Color(1, 1, 1);
 
+utils::STATES GAME_STATE = utils::PLAYING;
+bool isPaused = false;
+
 int main(int argc, char *args[])
 {
     SDL_Init(SDL_INIT_EVERYTHING);
@@ -90,54 +93,72 @@ int main(int argc, char *args[])
     /// Loop do Jogo
     while (executando)
     {
-        // Eventos
+        // Eventos - teclado
         while (SDL_PollEvent(&eventos))
         {
-            // Fecha com o x da janela ou com esc
-            if (utils::checkExit(eventos))
-                executando = false;
-            else // Anda lateralmente
-                utils::checkPlayerDirection(eventos, playerDirection);
+            utils::checkExit(eventos, GAME_STATE, isPaused);
+            utils::checkPlayerDirection(eventos, playerDirection);
         }
 
-        if (playerDirection[0])
-            player.moveLeft();
-        if (playerDirection[1])
-            player.moveRight();
-
-        /// LOGICA
-        // TODO: check if enemy got to the bottom of the screen.
-
-        /// RENDERIZACAO
-        glClear(GL_COLOR_BUFFER_BIT); //Limpa o buffer
-        // Inicia matriz
-        glPushMatrix();
-        // Dimensoes da Matriz
-        glOrtho(0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, -1, 1);
-
-        // Inicia desenho
-        // Desenha os inimigos
-        for (int i = 0; i < ENEMY_AMOUNT; i++)
+        switch (GAME_STATE)
         {
-            if (!enemies[i].isDestroyed())
+        case utils::PLAYING:
+        {
+            if (playerDirection[0])
+                player.moveLeft();
+            if (playerDirection[1])
+                player.moveRight();
+
+            /// LOGICA
+            // TODO: check if enemy got to the bottom of the screen.
+
+            drws::resetScreen(WINDOW_WIDTH, WINDOW_HEIGHT);
+
+            // Desenho
+            for (int i = 0; i < ENEMY_AMOUNT; i++)
             {
-                drws::desenhaQuadradoIncremento(enemies[i], AZUL);
+                if (!enemies[i].isDestroyed())
+                    drws::desenhaQuadradoIncremento(enemies[i], AZUL);
+                enemies[i].moveUp();
             }
-            enemies[i].moveUp();
+            // Desenha a nave do personagem
+            drws::desenhaQuadradoIncremento(player, VERMELHO);
+
+            // // Desenha tiros
+            // if (gTiro == true)
+            // {
+            //     drws::desenhaTiro(coord_tiro,
+            //                       COMPRIMENTO_TIRO,
+            //                       ALTURA_TIRO,
+            //                       COMPRIMENTO_PERSON,
+            //                       BRANCO);
+            // }
+            break;
         }
+        case utils::PAUSED:
+        {
+            //   Spaceship(float _x, float _y, float _height, float _width);
+            Spaceship teste = Spaceship(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 300.0, 300.0);
+            drws::resetScreen(WINDOW_WIDTH, WINDOW_HEIGHT);
+            drws::desenhaQuadradoIncremento(teste, BRANCO);
+            break;
+        }
+        case utils::GAME_OVER:
+        {
+            //   Spaceship(float _x, float _y, float _height, float _width);
+            Spaceship teste = Spaceship(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 300.0, 300.0);
+            drws::resetScreen(WINDOW_WIDTH, WINDOW_HEIGHT);
+            drws::desenhaQuadradoIncremento(teste, VERDE);
+            break;
+        }
+        case utils::EXIT:
+            executando = false;
+            break;
 
-        // Desenha a nave do personagem
-        drws::desenhaQuadradoIncremento(player, VERMELHO);
-
-        // // Desenha tiros
-        // if (gTiro == true)
-        // {
-        //     drws::desenhaTiro(coord_tiro,
-        //                       COMPRIMENTO_TIRO,
-        //                       ALTURA_TIRO,
-        //                       COMPRIMENTO_PERSON,
-        //                       BRANCO);
-        // }
+        default:
+            std::cout << "SOMETHING WENT WRONG!\n";
+            break;
+        }
 
         // Fecha matriz
         glPopMatrix();
