@@ -31,7 +31,7 @@ namespace drws
   void desenhaTiro(Coordenada primeira,
                    float &COMPRIMENTO_TIRO,
                    float &ALTURA_TIRO,
-                   float &COMPRIMENTO_PESON,
+                   float &COMPRIMENTO_PERSON,
                    Color &c);
   void movimentaLateralmente(SDL_Event eventos,
                              float posicao,

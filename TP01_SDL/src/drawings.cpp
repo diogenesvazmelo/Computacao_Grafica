@@ -44,14 +44,14 @@ void drws::desenhaLinha(Coordenada primeira, Coordenada ultima, Color cor)
 void drws::desenhaTiro(Coordenada primeira,
                        float &COMPRIMENTO_TIRO,
                        float &ALTURA_TIRO,
-                       float &COMPRIMENTO_PESON,
+                       float &COMPRIMENTO_PERSON,
                        Color &c)
 {
   Coordenada incremento;
   incremento.x = COMPRIMENTO_TIRO;
   incremento.y = ALTURA_TIRO;
 
-  primeira.x += (COMPRIMENTO_PESON / 2) - (incremento.x / 2);
+  primeira.x += (COMPRIMENTO_PERSON / 2) - (incremento.x / 2);
 
   Color cor = c;
   glColor3f(cor.r, cor.g, cor.b);

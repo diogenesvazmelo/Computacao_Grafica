@@ -1,5 +1,5 @@
 CXX 			:= g++
-CXXFLAGS 	:= -lSDL -lSOIL -lglut -lGLEW -lGLU -lGL
+CXXFLAGS 	:= -std=c++14 -lSDL -lSOIL -lglut -lGLEW -lGLU -lGL
 LDFLAGS  	:= -L/usr/lib -lstdc++ -lm
 OBJ_DIR 	:= ./obj
 APP_DIR		:= ./bin

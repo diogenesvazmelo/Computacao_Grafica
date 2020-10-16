@@ -16,11 +16,11 @@
 #include "../include/colors.hpp"
 #include "../include/drawings.hpp"
 
-float LARGURA_JANELA = 600;
-float ALTURA_JANELA = 400;
+float LARGURA_JANELA = 1280;
+float ALTURA_JANELA = 720;
 
-float COMPRIMENTO_PESON = 50;
-float ALTURA_PESON = 30;
+float COMPRIMENTO_PERSON = 50;
+float ALTURA_PERSON = 30;
 
 float COMPRIMENTO_INIMIGO = 50;
 float ALTURA_INIMIGO = 50;
@@ -28,7 +28,7 @@ float ALTURA_INIMIGO = 50;
 float COMPRIMENTO_TIRO = 20;
 float ALTURA_TIRO = 20;
 
-float VELOCIDADE_LATERAL = 0.1;
+float VELOCIDADE_LATERAL = 2;
 float FATOR_DIVISAO_VELOCIDADE_INIMIGO = 5;
 float FATOR_MULTIPLICACAO_DESCIDA_INIMIGO = 100;
 
@@ -62,10 +62,10 @@ int main(int argc, char *args[])
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
     // Nome da janela
-    SDL_WM_SetCaption("TP01_SDL", NULL);
+    SDL_WM_SetCaption("Space Invanders", NULL);
 
     // Tamanho da janela
-    SDL_SetVideoMode(LARGURA_JANELA, ALTURA_JANELA, 32, SDL_OPENGL); // 600x400. 32 -> relativo a bits por pixel
+    SDL_SetVideoMode(LARGURA_JANELA, ALTURA_JANELA, 32, SDL_OPENGL); // 720p. 32 -> relativo a bits por pixel
 
     // Cor inicial -> color & opacity
     glClearColor(PRETO.r, PRETO.g, PRETO.b, 1.0);
@@ -90,11 +90,11 @@ int main(int argc, char *args[])
 
     // Nave
     Coordenada person;
-    person.x = (LARGURA_JANELA / 2) - (COMPRIMENTO_PESON / 2);
+    person.x = (LARGURA_JANELA / 2) - (COMPRIMENTO_PERSON / 2);
     person.y = ALTURA_JANELA - 50;
     Coordenada person_incremento;
-    person_incremento.x = COMPRIMENTO_PESON;
-    person_incremento.y = ALTURA_PESON;
+    person_incremento.x = COMPRIMENTO_PERSON;
+    person_incremento.y = ALTURA_PERSON;
 
     // Inimigos
     Inimigo inimigo[QUANTIDADE_DE_INIMIGOS];
@@ -241,7 +241,7 @@ int main(int argc, char *args[])
             drws::desenhaTiro(coord_tiro,
                               COMPRIMENTO_TIRO,
                               ALTURA_TIRO,
-                              COMPRIMENTO_PESON,
+                              COMPRIMENTO_PERSON,
                               BRANCO);
         }
 
