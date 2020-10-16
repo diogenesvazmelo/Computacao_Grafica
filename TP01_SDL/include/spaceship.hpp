@@ -28,6 +28,7 @@ class Spaceship
 {
 private:
   float x, y;
+  float height, width;
   float speed;
   Blast *b; // only one fire per ship
   bool destroyed;
@@ -35,7 +36,9 @@ private:
 public:
   Spaceship();
   Spaceship(float _x, float _y);
+  Spaceship(float _x, float _y, float _height, float _width);
   Spaceship(float _x, float _y, float _speed);
+  Spaceship(float _x, float _y, float _height, float _width, float _speed);
 
   float getX();
   void setX(float _x);
@@ -43,11 +46,20 @@ public:
   float getY();
   void setY(float _y);
 
+  float getHeight();
+  void setHeight(float _height);
+
+  float getWidth();
+  void setWidth(float _width);
+
   float getSpeed();
   void setSpeed(float _speed);
 
   Blast getBlast();
   void fireBlast();
+
+  bool isDestroyed();
+  void setDestroyed(bool _destroyed);
 
   void moveLeft();
   void moveRight();

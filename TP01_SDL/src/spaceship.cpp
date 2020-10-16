@@ -1,7 +1,7 @@
 #include "../include/spaceship.hpp"
 #include <cstddef>
 
-const float DEFAULT_BLAST_LENGTH = 5.0;
+const float DEFAULT_BLAST_LENGTH = 20.0;
 const float DEFAULT_BLAST_SPEED = 5.0;
 
 // BLAST SECTION
@@ -60,11 +60,13 @@ void Blast::moveDown()
 }
 
 // BLAST FINISHED
-const float DEFAULT_SPACESHIP_SPEED = 5.0;
+const float DEFAULT_SPACESHIP_SPEED = 2.0;
+const float DEFAULT_SPACESHIP_HEIGHT = 50.0;
+const float DEFAULT_SPACESHIP_WIDTH = 50.0;
 
 Spaceship::Spaceship()
 {
-  x = y = speed = 0.0;
+  x = y = speed = height = width = 0.0;
   b = NULL;
   destroyed = false;
 }
@@ -72,6 +74,17 @@ Spaceship::Spaceship(float _x, float _y)
 {
   x = _x;
   y = _y;
+  height = DEFAULT_SPACESHIP_HEIGHT;
+  width = DEFAULT_SPACESHIP_WIDTH;
+  speed = DEFAULT_SPACESHIP_SPEED;
+  b = NULL;
+}
+Spaceship::Spaceship(float _x, float _y, float _height, float _width)
+{
+  x = _x;
+  y = _y;
+  height = _height;
+  width = _width;
   speed = DEFAULT_SPACESHIP_SPEED;
   b = NULL;
 }
@@ -79,6 +92,17 @@ Spaceship::Spaceship(float _x, float _y, float _speed)
 {
   x = _x;
   y = _y;
+  height = DEFAULT_SPACESHIP_HEIGHT;
+  width = DEFAULT_SPACESHIP_WIDTH;
+  speed = _speed;
+  b = NULL;
+}
+Spaceship::Spaceship(float _x, float _y, float _height, float _width, float _speed)
+{
+  x = _x;
+  y = _y;
+  height = _height;
+  width = _width;
   speed = _speed;
   b = NULL;
 }
@@ -101,6 +125,24 @@ void Spaceship::setY(float _y)
   y = _y;
 }
 
+float Spaceship::getHeight()
+{
+  return height;
+}
+void Spaceship::setHeight(float _height)
+{
+  height = _height;
+}
+
+float Spaceship::getWidth()
+{
+  return width;
+}
+void Spaceship::setWidth(float _width)
+{
+  width = _width;
+}
+
 float Spaceship::getSpeed()
 {
   return speed;
@@ -114,9 +156,18 @@ Blast Spaceship::getBlast()
 {
   return *b;
 }
-//TODO: implements firing shot !
+// TODO: implements firing shot !
 void fireBlast()
 {
+}
+
+bool Spaceship::isDestroyed()
+{
+  return destroyed;
+}
+void Spaceship::setDestroyed(bool _destroyed)
+{
+  destroyed = _destroyed;
 }
 
 void Spaceship::moveLeft()
@@ -129,9 +180,9 @@ void Spaceship::moveRight()
 }
 void Spaceship::moveDown()
 {
-  y -= speed;
+  y -= speed / 2;
 }
 void Spaceship::moveUp()
 {
-  y += speed;
+  y += speed / 2;
 }
