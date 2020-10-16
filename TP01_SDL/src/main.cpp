@@ -117,8 +117,13 @@ int main(int argc, char *args[])
             /// LOGICA
 
             for (int i = 0; i < ENEMY_AMOUNT; i++)
+            {
                 utils::enemyMovement(enemies[i], origCoord[i] - DEFAULT_PADDING, origCoord[i] + DEFAULT_PADDING, ENEMY_DIRECTION);
-
+                if (utils::outOfBounds(enemies[i], WINDOW_WIDTH, WINDOW_HEIGHT))
+                {
+                    GAME_STATE = utils::PAUSED;
+                }
+            }
             if (attemptShot)
                 player.fireBlast();
             if (player.blastExists())

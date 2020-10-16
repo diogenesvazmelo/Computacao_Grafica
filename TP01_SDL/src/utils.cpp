@@ -37,7 +37,6 @@ bool utils::shot(SDL_Event event)
   return (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE);
 }
 
-//TODO
 bool utils::collision(Spaceship player, Spaceship enemy)
 {
   // [bottom left, bottom right, top right, top left]
@@ -75,4 +74,17 @@ void utils::enemyMovement(Spaceship &sp, float leftLimit, float rightLimit, bool
     sp.setX(leftLimit);
     direction = !direction;
   }
+}
+
+bool utils::outOfBounds(Spaceship sp, float SCREEN_WIDTH, float SCREEN_HEIGHT)
+{
+  float upperX = sp.getX() - sp.getWidth() / 2;
+  float lowerX = sp.getX() + sp.getWidth() / 2;
+  float upperY = sp.getY() - sp.getHeight() / 2;
+  float lowerY = sp.getY() + sp.getHeight() / 2;
+
+  return (upperX < 0 ||
+          lowerX > SCREEN_WIDTH ||
+          upperY < 0 ||
+          lowerY > SCREEN_HEIGHT);
 }

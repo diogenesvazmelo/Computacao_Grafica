@@ -26,5 +26,7 @@ namespace utils
 
   bool collision(Spaceship player, Spaceship enemy);
   void enemyMovement(Spaceship &sp, float leftLimit, float rightLimit, bool &direction);
+
+  bool outOfBounds(Spaceship sp, float SCREEN_WIDTH, float SCREEN_HEIGHT);
 } // namespace utils
 #endif
