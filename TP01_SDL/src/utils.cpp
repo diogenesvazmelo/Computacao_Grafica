@@ -71,6 +71,32 @@ bool utils::collision(Spaceship player, Spaceship enemy)
   return false;
 }
 
+bool utils::collision(Blast blast, Spaceship enemy)
+{
+
+  float b[4] = {
+      blast.getX() - blast.getThickness() / 2,
+      blast.getX() + blast.getThickness() / 2,
+      blast.getY() - blast.getLength() / 2,
+      blast.getY() + blast.getLength() / 2,
+  };
+  float e[4] = {
+      enemy.getX() - enemy.getWidth() / 2,
+      enemy.getX() + enemy.getWidth() / 2,
+      enemy.getY() - enemy.getHeight() / 2,
+      enemy.getY() + enemy.getHeight() / 2,
+  };
+
+  // TODO: CONFLICT
+  if (b[0] < e[1] &&
+      b[1] > e[0] &&
+      b[2] < e[3] &&
+      b[3] > e[2])
+    return true;
+
+  return false;
+}
+
 void utils::enemyMovement(Spaceship &sp, float leftLimit, float rightLimit, bool &direction)
 {
   if (direction)
@@ -96,6 +122,19 @@ bool utils::outOfBounds(Spaceship sp, float SCREEN_WIDTH, float SCREEN_HEIGHT)
   float lowerX = sp.getX() + sp.getWidth() / 2;
   float upperY = sp.getY() - sp.getHeight() / 2;
   float lowerY = sp.getY() + sp.getHeight() / 2;
+
+  return (upperX < 0 ||
+          lowerX > SCREEN_WIDTH ||
+          upperY < 0 ||
+          lowerY > SCREEN_HEIGHT);
+}
+
+bool utils::outOfBounds(Blast b, float SCREEN_WIDTH, float SCREEN_HEIGHT)
+{
+  float upperX = b.getX() - b.getThickness() / 2;
+  float lowerX = b.getX() + b.getThickness() / 2;
+  float upperY = b.getY() - b.getLength() / 2;
+  float lowerY = b.getY() + b.getLength() / 2;
 
   return (upperX < 0 ||
           lowerX > SCREEN_WIDTH ||

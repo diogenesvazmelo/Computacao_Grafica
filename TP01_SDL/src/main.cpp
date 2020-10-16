@@ -117,7 +117,20 @@ int main(int argc, char *args[])
             {
                 playerBlast.moveUp();
                 // TODO: check out of bounds
-                // TODO: check colission with enemies
+                if (utils::outOfBounds(playerBlast, WINDOW_WIDTH, WINDOW_HEIGHT))
+                {
+                    blastExists = false;
+                }
+                // Check colission with enemies
+                for (int i = 0; i < ENEMY_AMOUNT; i++)
+                {
+                    if (!enemies[i].isDestroyed() && utils::collision(playerBlast, enemies[i]))
+                    {
+                        blastExists = false;
+                        enemies[i].setDestroyed(true);
+                        break;
+                    }
+                }
             }
 
             for (int i = 0; i < ENEMY_AMOUNT; i++)
