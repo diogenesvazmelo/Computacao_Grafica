@@ -7,6 +7,7 @@
 #if __linux__
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
+#include <SDL/SDL_timer.h>
 #include <SDL/SDL_ttf.h>
 
 #include "SDL/SDL_opengl.h"
@@ -24,18 +25,18 @@
 #include "../include/spaceship.hpp"
 #include "../include/utils.hpp"
 
-const float SPEED = 0.75;
-
-
 const float WINDOW_WIDTH = 1280;
 const float WINDOW_HEIGHT = 720;
 const float DEFAULT_SHIP_WIDTH = 50.0;
 const float DEFAULT_SHIP_HEIGHT = 50.0;
+const float DEFAULT_PLAYER_SPEED = 5.0;
 const float DEFAULT_ENEMY_SPACE = 100;
-const float DEFAULT_PADDING = (DEFAULT_ENEMY_SPACE - DEFAULT_SHIP_WIDTH) /
-                              2;  // space of movement of the enemy
+// space of movement of the enemy
+const float DEFAULT_PADDING = (DEFAULT_ENEMY_SPACE - DEFAULT_SHIP_WIDTH) / 2;
 const int ENEMY_AMOUNT = (int)(WINDOW_WIDTH / DEFAULT_ENEMY_SPACE);
 bool ENEMY_DIRECTION = true;  // Right/true and Left/false !
+const int SCREEN_FPS = 60;
+const int SCREEN_TICKS_PER_FRAME = 1000 / SCREEN_FPS;
 
 Color VERMELHO = Color(1, 0, 0);
 Color VERDE = Color(0, 1, 0);
@@ -84,13 +85,13 @@ bool init() {
   //-----------------------------------------------------------------
 
   // INITIALIZING IMAGE SUPPORT
-//  int flags = IMG_INIT_JPG | IMG_INIT_PNG;
-//  int initted = IMG_Init(flags);
-//  if ((initted & flags) != flags) {
-//    fprintf(stderr, "IMG_Init: Failed to init required jpg and png support!\n");
-//    fprintf(stderr, "IMG_Init: %s\n", IMG_GetError());
-//    return false;
-//  }
+  //  int flags = IMG_INIT_JPG | IMG_INIT_PNG;
+  //  int initted = IMG_Init(flags);
+  //  if ((initted & flags) != flags) {
+  //    fprintf(stderr, "IMG_Init: Failed to init required jpg and png
+  //    support!\n"); fprintf(stderr, "IMG_Init: %s\n", IMG_GetError()); return
+  //    false;
+  //  }
 
   return true;
 }
@@ -99,12 +100,13 @@ int main(int argc, char *args[]) {
   if (!init()) exit(1);
 
   // SCREENS
-//  pause_image = IMG_Load("./imgs/mario.png");
-//  if (!pause_image) printf("ERROR IN IMAGE\n");
+  //  pause_image = IMG_Load("./imgs/mario.png");
+  //  if (!pause_image) printf("ERROR IN IMAGE\n");
 
   // VARIABLES
   bool executando = true;
   SDL_Event eventos;
+
   // TODO: REMOVE THIS
   std::vector<bool> playerDirection(2, false);
   utils::STATES GAME_STATE = utils::PLAYING;
@@ -113,7 +115,7 @@ int main(int argc, char *args[]) {
 
   // Nave -> (x, y, h, w)
   Spaceship player = Spaceship((WINDOW_WIDTH / 2), WINDOW_HEIGHT - 50, 30.0,
-                               DEFAULT_SHIP_WIDTH, SPEED);
+                               DEFAULT_SHIP_WIDTH, DEFAULT_PLAYER_SPEED);
   Blast playerBlast;
 
   // Inimigos
@@ -129,8 +131,10 @@ int main(int argc, char *args[]) {
     origCoord[i] = enem_x;
   }
 
-  /// Loop do Jogo
+  Uint32 frameRate = 60;
+  Uint32 frameMS = 1000 / frameRate;
   while (executando) {
+    Uint32 startMs = SDL_GetTicks();
     // Eventos - teclado
     while (SDL_PollEvent(&eventos)) {
       utils::checkState(eventos, GAME_STATE, isPaused);
@@ -220,6 +224,9 @@ int main(int argc, char *args[]) {
         break;
     }
 
+    Uint32 endMs = SDL_GetTicks();
+    Uint32 delayMS = frameMS - (endMs - startMs);
+    SDL_Delay(delayMS);
     // Fecha matriz
     glPopMatrix();
     /// Animacao

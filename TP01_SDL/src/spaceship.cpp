@@ -1,9 +1,7 @@
 #include "../include/spaceship.hpp"
 
-#include <cstddef>
-
 const float DEFAULT_BLAST_LENGTH = 20.0;
-const float DEFAULT_BLAST_SPEED = 4.0;
+const float DEFAULT_BLAST_SPEED = 5.0;
 const float DEFAULT_BLAST_THICKNESS = 5.0;
 
 // BLAST SECTION
@@ -49,7 +47,7 @@ void Blast::moveUp() { y -= speed / 2; }
 void Blast::moveDown() { y += speed / 2; }
 
 // BLAST FINISHED
-const float DEFAULT_SPACESHIP_SPEED = 0.05;
+const float DEFAULT_SPACESHIP_SPEED = 1;
 const float DEFAULT_SPACESHIP_HEIGHT = 50.0;
 const float DEFAULT_SPACESHIP_WIDTH = 50.0;
 
