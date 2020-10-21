@@ -1,5 +1,5 @@
 CXX 			:= g++
-CXXFLAGS 	:= -std=c++14 -lSDL -lSOIL -lglut -lGLEW -lGLU -lGL
+CXXFLAGS 	:= -std=c++14 -lSDL -lSDL_ttf -lSOIL -lglut -lGLEW -lGLU -lGL
 LDFLAGS  	:= -L/usr/lib -lstdc++ -lm -lSDL_mixer
 OBJ_DIR 	:= ./obj
 APP_DIR		:= ./bin
@@ -19,7 +19,7 @@ $(OBJ_DIR)/%.o: %.cpp
 
 $(APP_DIR)/$(TARGET): $(OBJECTS)
 	@mkdir -p $(@D)
-	$(CXX) -o $(APP_DIR)/$(TARGET) $^ $(CXXFLAGS) 
+	$(CXX) -o $(APP_DIR)/$(TARGET) $^ $(`sld-config --libs`)  $(CXXFLAGS) 
  
 .PHONY: all build clean debug release
 

@@ -7,6 +7,7 @@
 #if __linux__
 #include <SDL/SDL.h>
 #include "SDL/SDL_opengl.h"
+#include <SDL/SDL_ttf.h>
 #elif _WIN32
 #include <SDL.h>
 #include "SDL_opengl.h"
@@ -68,6 +69,7 @@ int main(int argc, char *args[])
     //-----------------------------------------------------------------
 
     // TESTING TEXTURES
+    // first on pause and game_over screens
 
     // VARIABLES
     bool executando = true;
