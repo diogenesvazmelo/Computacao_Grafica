@@ -49,7 +49,7 @@ void Blast::moveUp() { y -= speed / 2; }
 void Blast::moveDown() { y += speed / 2; }
 
 // BLAST FINISHED
-const float DEFAULT_SPACESHIP_SPEED = 1.0;
+const float DEFAULT_SPACESHIP_SPEED = 0.05;
 const float DEFAULT_SPACESHIP_HEIGHT = 50.0;
 const float DEFAULT_SPACESHIP_WIDTH = 50.0;
 

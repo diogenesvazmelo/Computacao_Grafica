@@ -24,6 +24,9 @@
 #include "../include/spaceship.hpp"
 #include "../include/utils.hpp"
 
+const float SPEED = 0.75;
+
+
 const float WINDOW_WIDTH = 1280;
 const float WINDOW_HEIGHT = 720;
 const float DEFAULT_SHIP_WIDTH = 50.0;
@@ -81,13 +84,13 @@ bool init() {
   //-----------------------------------------------------------------
 
   // INITIALIZING IMAGE SUPPORT
-  int flags = IMG_INIT_JPG | IMG_INIT_PNG;
-  int initted = IMG_Init(flags);
-  if ((initted & flags) != flags) {
-    fprintf(stderr, "IMG_Init: Failed to init required jpg and png support!\n");
-    fprintf(stderr, "IMG_Init: %s\n", IMG_GetError());
-    return false;
-  }
+//  int flags = IMG_INIT_JPG | IMG_INIT_PNG;
+//  int initted = IMG_Init(flags);
+//  if ((initted & flags) != flags) {
+//    fprintf(stderr, "IMG_Init: Failed to init required jpg and png support!\n");
+//    fprintf(stderr, "IMG_Init: %s\n", IMG_GetError());
+//    return false;
+//  }
 
   return true;
 }
@@ -96,8 +99,8 @@ int main(int argc, char *args[]) {
   if (!init()) exit(1);
 
   // SCREENS
-  pause_image = IMG_Load("./imgs/mario.png");
-  if (!pause_image) printf("ERROR IN IMAGE\n");
+//  pause_image = IMG_Load("./imgs/mario.png");
+//  if (!pause_image) printf("ERROR IN IMAGE\n");
 
   // VARIABLES
   bool executando = true;
@@ -110,7 +113,7 @@ int main(int argc, char *args[]) {
 
   // Nave -> (x, y, h, w)
   Spaceship player = Spaceship((WINDOW_WIDTH / 2), WINDOW_HEIGHT - 50, 30.0,
-                               DEFAULT_SHIP_WIDTH, 5);
+                               DEFAULT_SHIP_WIDTH, SPEED);
   Blast playerBlast;
 
   // Inimigos
