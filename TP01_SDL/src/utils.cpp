@@ -34,6 +34,25 @@ void utils::shot(SDL_Event event, bool &blastExists, Blast &b, Spaceship sp) {
   }
 }
 
+bool utils::checkResetEvent(SDL_Event event) {
+  return (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_r);
+}
+
+void utils::reset(Spaceship &player, std::vector<Spaceship> &enemies,
+                  float window_width, float window_height, float padding,
+                  float enemyArea) {
+  player = Spaceship(window_width / 2, window_height - 50);
+  player.setSpeed(player.getSpeed() * 2);  // 2 times faster than a normal enemy
+  player.setHeight(player.getHeight() / 2);
+
+  for (int i = 0; i < enemies.size(); i++) {
+    // adapts the space according to the enemy amount
+    float enem_x = padding * 2 * i + padding + 50 * i + 50 / 2;
+    enem_x += (window_width - (enemies.size() * enemyArea)) / 2;
+    enemies[i] = Spaceship(enem_x, 50 + 30);
+  }
+}
+
 bool utils::collision(Spaceship player, Spaceship enemy) {
   float p[4] = {
       player.getX() - player.getWidth() / 2,
@@ -88,6 +107,15 @@ void utils::enemyMovement(Spaceship &sp, float tConst, float leftLimit,
     sp.setX(leftLimit);
     direction = !direction;
   }
+}
+
+bool utils::canGoLeft(Spaceship player, float movConst) {
+  return (player.getX() - player.getSpeed() * movConst -
+          player.getWidth() / 2) > 0;
+}
+bool utils::canGoRight(Spaceship player, float movConst, float window_width) {
+  return (player.getX() + player.getSpeed() * movConst -
+          player.getWidth() / 2) < window_width;
 }
 
 bool utils::outOfBounds(Spaceship sp, float SCREEN_WIDTH, float SCREEN_HEIGHT) {

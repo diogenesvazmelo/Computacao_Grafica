@@ -31,7 +31,6 @@ const float WINDOW_WIDTH = 1280;
 const float WINDOW_HEIGHT = 720;
 const float DEFAULT_SHIP_WIDTH = 50.0;
 const float DEFAULT_SHIP_HEIGHT = 50.0;
-const float DEFAULT_PLAYER_SPEED = 100.0;
 const float DEFAULT_ENEMY_SPACE = 100;
 // space of movement of the enemy
 const float DEFAULT_PADDING = (DEFAULT_ENEMY_SPACE - DEFAULT_SHIP_WIDTH) / 2;
@@ -45,7 +44,7 @@ Color PRETO = Color(0, 0, 0);
 Color BRANCO = Color(1, 1, 1);
 
 SDL_Surface *screen;
-SDL_Surface *pause_image;
+// SDL_Surface *pause_image;
 
 bool init() {
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -112,46 +111,53 @@ int main(int argc, char *args[]) {
   bool isPaused = false;
 
   // Nave -> (x, y, h, w)
-  Spaceship player = Spaceship((WINDOW_WIDTH / 2), WINDOW_HEIGHT - 50, 30.0,
-                               DEFAULT_SHIP_WIDTH, DEFAULT_PLAYER_SPEED);
+  Spaceship player;
+  //  = Spaceship((WINDOW_WIDTH / 2), WINDOW_HEIGHT - 50, 30.0,
+  //                              DEFAULT_SHIP_WIDTH);
   Blast playerBlast;
 
   // Inimigos
   std::vector<Spaceship> enemies(ENEMY_AMOUNT);
   std::vector<float> origCoord(ENEMY_AMOUNT);
-  for (int i = 0; i < ENEMY_AMOUNT; i++) {
+  for (int i = 0; i < enemies.size(); i++) {
     // adapts the space according to the enemy amount
     float enem_x = DEFAULT_PADDING * 2 * i + DEFAULT_PADDING +
                    DEFAULT_SHIP_WIDTH * i + DEFAULT_SHIP_WIDTH / 2;
     enem_x += (WINDOW_WIDTH - (ENEMY_AMOUNT * DEFAULT_ENEMY_SPACE)) / 2;
-
-    enemies[i] = Spaceship(enem_x, DEFAULT_SHIP_HEIGHT + 30);
     origCoord[i] = enem_x;
   }
 
-  Uint32 frameRate = 60;
-  Uint32 frameMS = (Uint32)std::ceil(1000 / frameRate);
+  utils::reset(player, enemies, WINDOW_WIDTH, WINDOW_HEIGHT, DEFAULT_PADDING,
+               DEFAULT_ENEMY_SPACE);
+
+  Uint32 frameRate = 30;
+  Uint32 frameMS = (Uint32)std::floor(1000 / frameRate);
   float movConst = (float)1.0 / frameRate;
   while (executando) {
     Uint32 startMs = SDL_GetTicks();
+
+    bool resetState = false;
     // Eventos - teclado
     while (SDL_PollEvent(&eventos)) {
       utils::checkState(eventos, GAME_STATE, isPaused);
       utils::checkPlayerDirection(eventos, playerDirection);
       utils::shot(eventos, blastExists, playerBlast, player);
+      resetState = utils::checkResetEvent(eventos);
     }
 
     switch (GAME_STATE) {
       case utils::PLAYING: {
+        if (resetState) {
+          utils::reset(player, enemies, WINDOW_WIDTH, WINDOW_HEIGHT,
+                       DEFAULT_PADDING, DEFAULT_ENEMY_SPACE);
+        }
         /// LOGICA
-        if (playerDirection[0] && player.getX() - player.getSpeed() * movConst -
-                                          player.getWidth() / 2 >
-                                      0)
+        if (playerDirection[0] && utils::canGoLeft(player, movConst))
           player.moveLeft(movConst);
-        if (playerDirection[1] && player.getX() + player.getSpeed() * movConst +
-                                          player.getWidth() / 2 <
-                                      WINDOW_WIDTH)
+        if (playerDirection[1] &&
+            utils::canGoRight(player, movConst, WINDOW_WIDTH))
           player.moveRight(movConst);
+
         if (blastExists) {
           playerBlast.moveUp();
           // TODO: check out of bounds
