@@ -1,6 +1,6 @@
 CXX 			:= g++
 CXXFLAGS 	:= -std=c++14 -lSDL -lSOIL -lglut -lGLEW -lGLU -lGL
-LDFLAGS  	:= -L/usr/lib -lstdc++ -lm
+LDFLAGS  	:= -L/usr/lib -lstdc++ -lm -lSDL_mixer
 OBJ_DIR 	:= ./obj
 APP_DIR		:= ./bin
 TARGET		:= game

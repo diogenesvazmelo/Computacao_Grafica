@@ -67,6 +67,8 @@ int main(int argc, char *args[])
     glDisable(GL_DEPTH_TEST);
     //-----------------------------------------------------------------
 
+    // TESTING TEXTURES
+
     // VARIABLES
     bool executando = true;
     SDL_Event eventos;
