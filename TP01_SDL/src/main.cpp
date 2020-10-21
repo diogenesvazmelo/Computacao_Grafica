@@ -17,6 +17,8 @@
 #include "SDL_opengl.h"
 #endif
 
+#include <math.h>
+
 #include <iostream>
 #include <vector>
 
@@ -128,7 +130,7 @@ int main(int argc, char *args[]) {
   }
 
   Uint32 frameRate = 60;
-  Uint32 frameMS = 1000 / frameRate;
+  Uint32 frameMS = (Uint32)std::ceil(1000 / frameRate);
   float movConst = (float)1.0 / frameRate;
   while (executando) {
     Uint32 startMs = SDL_GetTicks();
