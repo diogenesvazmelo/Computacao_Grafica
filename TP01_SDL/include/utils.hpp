@@ -1,9 +1,9 @@
-#ifndef UTILS_HPP
-#define UTILS_HPP
+#ifndef MY_UTILS_HPP
+#define MY_UTILS_HPP
 
 #include "./colors.hpp"
 #if __linux__
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #elif _WIN32
 #include <SDL.h>
 #endif

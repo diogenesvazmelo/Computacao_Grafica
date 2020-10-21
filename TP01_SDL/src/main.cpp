@@ -5,18 +5,21 @@
 // -lglu32 codeblocks linker flags - nicholas: -lSDL -lglut -lSOIL -lGLU -lGL
 
 #if __linux__
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
-#include <SDL/SDL_timer.h>
-#include <SDL/SDL_ttf.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_opengl.h>
+#include <SDL2/SDL_timer.h>
+#include <SDL2/SDL_ttf.h>
 
-#include "SDL/SDL_opengl.h"
+#include "SDL2/SDL_opengl.h"
 #elif _WIN32
 #include <SDL.h>
 
 #include "SDL_opengl.h"
 #endif
 
+#include <SOIL.h>
+#include <SOIL/SOIL.h>
 #include <math.h>
 
 #include <iostream>
@@ -43,8 +46,8 @@ Color AZUL = Color(0, 0, 1);
 Color PRETO = Color(0, 0, 0);
 Color BRANCO = Color(1, 1, 1);
 
-SDL_Surface *screen;
-// SDL_Surface *pause_image;
+SDL_Window *window;
+SDL_Renderer *renderer;
 
 bool init() {
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -52,33 +55,33 @@ bool init() {
     return false;
   }
 
-  // Nome da janela
-  SDL_WM_SetCaption("Space Invanders", NULL);
   // Tamanho da janela
-  screen = SDL_SetVideoMode(WINDOW_WIDTH, WINDOW_HEIGHT, 32, SDL_OPENGL);
-  if (screen == NULL) {
-    fprintf(stderr, "Couldn't set %.0f x %.0f x 32 video mode: %s\n",
-            WINDOW_WIDTH, WINDOW_HEIGHT, SDL_GetError());
+  window = SDL_CreateWindow("Space Invaders", SDL_WINDOWPOS_UNDEFINED,
+                            SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH,
+                            WINDOW_HEIGHT, SDL_WINDOW_OPENGL);
+  if (window == NULL) {
+    fprintf(stderr, "Couldn't create a window");
     return false;
   }
-  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
-  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
-  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
-  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-  // Cor inicial -> color & opacity
-  glClearColor(PRETO.r, PRETO.g, PRETO.b, 1.0);
-  // area exibida
-  glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-  // sombra
-  glShadeModel(GL_SMOOTH);  // sombreamento
 
-  // 2D
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();  // desenho geometrico
+  // SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
+  // SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
+  // SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
+  // SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+  // SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  // // Cor inicial -> color & opacity
+  // glClearColor(PRETO.r, PRETO.g, PRETO.b, 1.0);
+  // // area exibida
+  // glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+  // // sombra
+  // glShadeModel(GL_SMOOTH);  // sombreamento
 
-  // 3D
-  glDisable(GL_DEPTH_TEST);
+  // // 2D
+  // glMatrixMode(GL_PROJECTION);
+  // glLoadIdentity();  // desenho geometrico
+
+  // // 3D
+  // glDisable(GL_DEPTH_TEST);
   //-----------------------------------------------------------------
 
   // INITIALIZING IMAGE SUPPORT
@@ -89,6 +92,9 @@ bool init() {
   //    support!\n"); fprintf(stderr, "IMG_Init: %s\n", IMG_GetError()); return
   //    false;
   //  }
+
+  Uint32 render_flags = SDL_RENDERER_ACCELERATED;
+  renderer = SDL_CreateRenderer(window, -1, render_flags);
 
   return true;
 }
@@ -130,9 +136,26 @@ int main(int argc, char *args[]) {
   utils::reset(player, enemies, WINDOW_WIDTH, WINDOW_HEIGHT, DEFAULT_PADDING,
                DEFAULT_ENEMY_SPACE);
 
+  // framerate variables
   Uint32 frameRate = 30;
   Uint32 frameMS = (Uint32)std::floor(1000 / frameRate);
   float movConst = (float)1.0 / frameRate;
+
+  // SDL_Surface *temp, *sprite;
+  // SDL_Rect rcSprite;
+  // SDL_Event event;
+  // Uint8 *keystate;
+  // int colorkey;
+
+  // // temp = SDL_LoadBMP("./imgs/player.bmp");
+  // // std::cout << temp << std::endl;
+  // // sprite = SDL_DisplayFormat(temp);
+  // // SDL_FreeSurface(temp);
+
+  // // /* setup sprite colorkey and turn on RLE */
+  // // colorkey = SDL_MapRGB(screen->format, 255, 0, 255);
+  // // SDL_SetColorKey(sprite, SDL_SRCCOLORKEY | SDL_RLEACCEL, colorkey);
+
   while (executando) {
     Uint32 startMs = SDL_GetTicks();
 
@@ -150,6 +173,7 @@ int main(int argc, char *args[]) {
         if (resetState) {
           utils::reset(player, enemies, WINDOW_WIDTH, WINDOW_HEIGHT,
                        DEFAULT_PADDING, DEFAULT_ENEMY_SPACE);
+          blastExists = false;
         }
         /// LOGICA
         if (playerDirection[0] && utils::canGoLeft(player, movConst))
@@ -199,6 +223,13 @@ int main(int argc, char *args[]) {
 
         // Desenha a nave do personagem
         drws::drawsSpaceship(player, VERMELHO);
+        // /* draw the sprite */
+        // rcSprite.x = (Sint16)player.getX();
+        // rcSprite.y = (Sint16)player.getY();
+        // rcSprite.w = (Sint16)player.getWidth();
+        // rcSprite.h = (Sint16)player.getHeight();
+        // std::cout << SDL_BlitSurface(screen, NULL, screen, &rcSprite)
+        //           << std::endl;
 
         if (blastExists) {
           drws::drawsBlast(playerBlast, BRANCO);
@@ -230,17 +261,28 @@ int main(int argc, char *args[]) {
         break;
     }
 
-    Uint32 endMs = SDL_GetTicks();
-    Uint32 delayMS = frameMS - (endMs - startMs);
-    SDL_Delay(delayMS);
+    // Uint32 endMs = SDL_GetTicks();
+    // Uint32 delayMS = frameMS - (endMs - startMs);
+    // if (delayMS > 0) SDL_Delay(delayMS);
+
     // Fecha matriz
     glPopMatrix();
-    /// Animacao
-    SDL_GL_SwapBuffers();
+    // /// Animacao
+    // SDL_GL_SwapBuffers();
+
+    // clears the screen
+    SDL_RenderClear(screen);
+    // SDL_RenderCopy(scre, tex, NULL, &dest);
+
+    // triggers the double buffers
+    // for multiple rendering
+    SDL_RenderPresent(screen);
+
+    // calculates to 60 fps
+    SDL_Delay(1000 / frameRate);
   }
 
   // ------------------------------------------------------------------
-
   glDisable(GL_BLEND);  // Para Windows apenas
   SDL_Quit();
 

@@ -67,9 +67,7 @@ bool utils::collision(Spaceship player, Spaceship enemy) {
       enemy.getY() + enemy.getHeight() / 2,
   };
 
-  // TODO: CONFLICT
   if (p[0] < e[1] && p[1] > e[0] && p[2] < e[3] && p[3] > e[2]) return true;
-
   return false;
 }
 
