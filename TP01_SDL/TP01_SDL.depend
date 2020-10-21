@@ -41,7 +41,7 @@
 
 1602702894 g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\include\cores.hpp
 
-1603303497 source:g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\src\drawings.cpp
+1603309588 source:g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\src\drawings.cpp
 	"../include/drawings.hpp"
 
 1603303497 g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\include\drawings.hpp
@@ -53,9 +53,9 @@
 
 1603303497 g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\include\colors.hpp
 
-1603303497 g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\include\spaceship.hpp
+1603307534 g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\include\spaceship.hpp
 
-1603303497 source:g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\src\main.cpp
+1603310140 source:g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\src\main.cpp
 	<SDL/SDL.h>
 	<SDL/SDL_image.h>
 	<SDL/SDL_ttf.h>
@@ -69,17 +69,17 @@
 	"../include/spaceship.hpp"
 	"../include/utils.hpp"
 
-1603303497 g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\include\utils.hpp
+1603307534 g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\include\utils.hpp
 	"./colors.hpp"
 	<SDL/SDL.h>
 	<SDL.h>
 	<vector>
 	"../include/spaceship.hpp"
 
-1603303497 source:g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\src\spaceship.cpp
+1603307534 source:g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\src\spaceship.cpp
 	"../include/spaceship.hpp"
 	<cstddef>
 
-1603303497 source:g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\src\utils.cpp
+1603307534 source:g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\src\utils.cpp
 	"../include/utils.hpp"
 

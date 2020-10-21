@@ -46,6 +46,15 @@ Color BRANCO = Color(1, 1, 1);
 SDL_Surface *screen;
 SDL_Surface *pause_image;
 
+
+void blit(SDL_Surface* image, SDL_Surface* screen){
+    Uint16 w = image->w;
+    Uint16 h = image->h;
+    SDL_Rect src = {0,0,w,h};
+    SDL_Rect dest = {0,0,0,0};
+    SDL_BlitSurface(image, &src, screen, &dest);
+}
+
 bool init() {
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
@@ -204,11 +213,46 @@ int main(int argc, char *args[]) {
         break;
       }
       case utils::GAME_OVER: {
-        //   Spaceship(float _x, float _y, float _height, float _width);
-        Spaceship teste =
-            Spaceship(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 300.0, 300.0);
-        drws::resetScreen(WINDOW_WIDTH, WINDOW_HEIGHT);
-        drws::drawsSpaceship(teste, VERDE);
+
+
+
+        try{
+            init();
+            putenv(strdup("SDL_VIDEO_WINDOW_POS = 10,10"));
+            SDL_Surface *Scren = SDL_SetVideoMode(640, 700, 0, SDL_DOUBLEBUF);
+
+            if (screen == NULL){
+                throw std::string("Unable to set video mode: ")+SDL_GetError();
+            }
+
+            SDL_Surface *temp = SDL_LoadBMP("imgs/diamond.bmp");
+            if (temp == NULL){
+                throw std::string("Unable to load bitmap.")+SDL_GetError();
+            }
+            SDL_Surface *image = SDL_DisplayFormat(temp);
+            SDL_FreeSurface(temp);
+
+            blit(image, screen);
+            SDL_Event event;
+
+            while(true){
+                if (SDL_PollEvent(&event)){
+                    if (event.type == SDL_QUIT) break;
+                    if (event.type == SDL_KEYDOWN){
+                        if (event.key.keysym.sym == SDLK_ESCAPE) break;
+                    }
+                }
+                SDL_Flip(screen);
+            }
+            SDL_FreeSurface(temp);
+        }
+        catch(const std::string& msg) { std::cout << msg << std::endl; }
+        catch(...) {std::cout << "oops" << std::endl; }
+
+
+
+
+
         break;
       }
       case utils::EXIT:
