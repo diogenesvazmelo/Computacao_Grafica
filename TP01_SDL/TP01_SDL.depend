@@ -41,21 +41,21 @@
 
 1602702894 g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\include\cores.hpp
 
-1603300757 source:g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\src\drawings.cpp
+1603303497 source:g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\src\drawings.cpp
 	"../include/drawings.hpp"
 
-1603300757 g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\include\drawings.hpp
+1603303497 g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\include\drawings.hpp
 	"./colors.hpp"
 	"SDL/SDL_opengl.h"
 	"SDL_opengl.h"
 	<iostream>
 	"../include/spaceship.hpp"
 
-1603300757 g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\include\colors.hpp
+1603303497 g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\include\colors.hpp
 
-1603300757 g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\include\spaceship.hpp
+1603303497 g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\include\spaceship.hpp
 
-1603302574 source:g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\src\main.cpp
+1603303497 source:g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\src\main.cpp
 	<SDL/SDL.h>
 	<SDL/SDL_image.h>
 	<SDL/SDL_ttf.h>
@@ -69,17 +69,17 @@
 	"../include/spaceship.hpp"
 	"../include/utils.hpp"
 
-1603300757 g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\include\utils.hpp
+1603303497 g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\include\utils.hpp
 	"./colors.hpp"
 	<SDL/SDL.h>
 	<SDL.h>
 	<vector>
 	"../include/spaceship.hpp"
 
-1603302451 source:g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\src\spaceship.cpp
+1603303497 source:g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\src\spaceship.cpp
 	"../include/spaceship.hpp"
 	<cstddef>
 
-1603300757 source:g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\src\utils.cpp
+1603303497 source:g:\users\di62028\documents\repositórios\cg\computacao_grafica\tp01_sdl\src\utils.cpp
 	"../include/utils.hpp"
 

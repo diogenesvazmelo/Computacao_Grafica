@@ -39,8 +39,15 @@
 		<Unit filename="TP01_SDL.cbp" />
 		<Unit filename="TP01_SDL.depend" />
 		<Unit filename="TP01_SDL.layout" />
-		<Unit filename="cores.cpp" />
-		<Unit filename="main.cpp" />
+		<Unit filename="include/colors.hpp" />
+		<Unit filename="include/cores.hpp" />
+		<Unit filename="include/drawings.hpp" />
+		<Unit filename="include/spaceship.hpp" />
+		<Unit filename="include/utils.hpp" />
+		<Unit filename="src/drawings.cpp" />
+		<Unit filename="src/main.cpp" />
+		<Unit filename="src/spaceship.cpp" />
+		<Unit filename="src/utils.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
