@@ -20,8 +20,8 @@ void shot(SDL_Event event, bool &blastExists, Blast &b, Spaceship sp);
 
 bool collision(Spaceship player, Spaceship enemy);
 bool collision(Blast blast, Spaceship enemy);
-void enemyMovement(Spaceship &sp, float leftLimit, float rightLimit,
-                   bool &direction);
+void enemyMovement(Spaceship &sp, float tConst, float leftLimit,
+                   float rightLimit, bool &direction);
 
 bool outOfBounds(Spaceship sp, float SCREEN_WIDTH, float SCREEN_HEIGHT);
 bool outOfBounds(Blast b, float SCREEN_WIDTH, float SCREEN_HEIGHT);

@@ -74,17 +74,17 @@ bool utils::collision(Blast blast, Spaceship enemy) {
   return false;
 }
 
-void utils::enemyMovement(Spaceship &sp, float leftLimit, float rightLimit,
-                          bool &direction) {
+void utils::enemyMovement(Spaceship &sp, float tConst, float leftLimit,
+                          float rightLimit, bool &direction) {
   if (direction)
-    sp.moveRight();
+    sp.moveRight(tConst);
   else
-    sp.moveLeft();
+    sp.moveLeft(tConst);
 
-  if (sp.getX() + sp.getSpeed() > rightLimit) {
+  if (sp.getX() + sp.getSpeed() * tConst > rightLimit) {
     sp.setX(rightLimit);
     direction = !direction;
-  } else if (sp.getX() + sp.getSpeed() < leftLimit) {
+  } else if (sp.getX() + sp.getSpeed() * tConst < leftLimit) {
     sp.setX(leftLimit);
     direction = !direction;
   }

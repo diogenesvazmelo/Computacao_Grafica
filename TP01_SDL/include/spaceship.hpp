@@ -65,10 +65,10 @@ class Spaceship {
   bool isDestroyed();
   void setDestroyed(bool _destroyed);
 
-  void moveLeft();
-  void moveRight();
-  void moveDown();
-  void moveUp();
+  void moveLeft(float tConst);
+  void moveRight(float tConst);
+  void moveDown(float tConst);
+  void moveUp(float tConst);
 };
 
 #endif

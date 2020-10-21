@@ -29,14 +29,12 @@ const float WINDOW_WIDTH = 1280;
 const float WINDOW_HEIGHT = 720;
 const float DEFAULT_SHIP_WIDTH = 50.0;
 const float DEFAULT_SHIP_HEIGHT = 50.0;
-const float DEFAULT_PLAYER_SPEED = 5.0;
+const float DEFAULT_PLAYER_SPEED = 100.0;
 const float DEFAULT_ENEMY_SPACE = 100;
 // space of movement of the enemy
 const float DEFAULT_PADDING = (DEFAULT_ENEMY_SPACE - DEFAULT_SHIP_WIDTH) / 2;
 const int ENEMY_AMOUNT = (int)(WINDOW_WIDTH / DEFAULT_ENEMY_SPACE);
 bool ENEMY_DIRECTION = true;  // Right/true and Left/false !
-const int SCREEN_FPS = 60;
-const int SCREEN_TICKS_PER_FRAME = 1000 / SCREEN_FPS;
 
 Color VERMELHO = Color(1, 0, 0);
 Color VERDE = Color(0, 1, 0);
@@ -52,8 +50,6 @@ bool init() {
     fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
     return false;
   }
-  /* Clean up on exit */
-  atexit(SDL_Quit);
 
   // Nome da janela
   SDL_WM_SetCaption("Space Invanders", NULL);
@@ -133,6 +129,7 @@ int main(int argc, char *args[]) {
 
   Uint32 frameRate = 60;
   Uint32 frameMS = 1000 / frameRate;
+  float movConst = (float)1.0 / frameRate;
   while (executando) {
     Uint32 startMs = SDL_GetTicks();
     // Eventos - teclado
@@ -145,13 +142,14 @@ int main(int argc, char *args[]) {
     switch (GAME_STATE) {
       case utils::PLAYING: {
         /// LOGICA
-        if (playerDirection[0] &&
-            player.getX() - player.getSpeed() - player.getWidth() / 2 > 0)
-          player.moveLeft();
-        if (playerDirection[1] &&
-            player.getX() + player.getSpeed() + player.getWidth() / 2 <
-                WINDOW_WIDTH)
-          player.moveRight();
+        if (playerDirection[0] && player.getX() - player.getSpeed() * movConst -
+                                          player.getWidth() / 2 >
+                                      0)
+          player.moveLeft(movConst);
+        if (playerDirection[1] && player.getX() + player.getSpeed() * movConst +
+                                          player.getWidth() / 2 <
+                                      WINDOW_WIDTH)
+          player.moveRight(movConst);
         if (blastExists) {
           playerBlast.moveUp();
           // TODO: check out of bounds
@@ -171,9 +169,9 @@ int main(int argc, char *args[]) {
 
         for (int i = 0; i < ENEMY_AMOUNT; i++) {
           if (!enemies[i].isDestroyed()) {
-            utils::enemyMovement(enemies[i], origCoord[i] - DEFAULT_PADDING,
-                                 origCoord[i] + DEFAULT_PADDING,
-                                 ENEMY_DIRECTION);
+            utils::enemyMovement(
+                enemies[i], (float)movConst, origCoord[i] - DEFAULT_PADDING,
+                origCoord[i] + DEFAULT_PADDING, ENEMY_DIRECTION);
             if (utils::outOfBounds(enemies[i], WINDOW_WIDTH, WINDOW_HEIGHT))
               GAME_STATE = utils::GAME_OVER;
             if (utils::collision(player, enemies[i]))
@@ -188,7 +186,7 @@ int main(int argc, char *args[]) {
         // Desenho
         for (int i = 0; i < ENEMY_AMOUNT; i++) {
           if (!enemies[i].isDestroyed()) drws::drawsSpaceship(enemies[i], AZUL);
-          enemies[i].moveDown();
+          enemies[i].moveDown(movConst);
         }
 
         // Desenha a nave do personagem

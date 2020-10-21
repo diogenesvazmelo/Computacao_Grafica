@@ -47,7 +47,7 @@ void Blast::moveUp() { y -= speed / 2; }
 void Blast::moveDown() { y += speed / 2; }
 
 // BLAST FINISHED
-const float DEFAULT_SPACESHIP_SPEED = 1;
+const float DEFAULT_SPACESHIP_SPEED = 50;
 const float DEFAULT_SPACESHIP_HEIGHT = 50.0;
 const float DEFAULT_SPACESHIP_WIDTH = 50.0;
 
@@ -103,9 +103,9 @@ void Spaceship::setSpeed(float _speed) { speed = _speed; }
 bool Spaceship::isDestroyed() { return destroyed; }
 void Spaceship::setDestroyed(bool _destroyed) { destroyed = _destroyed; }
 
-void Spaceship::moveLeft() { x -= speed; }
-void Spaceship::moveRight() { x += speed; }
-void Spaceship::moveDown() { y += speed / 4; }
-void Spaceship::moveUp() { y -= speed / 4; }
+void Spaceship::moveLeft(float tConst) { x -= speed * tConst; }
+void Spaceship::moveRight(float tConst) { x += speed * tConst; }
+void Spaceship::moveDown(float tConst) { y += speed * tConst / 4; }
+void Spaceship::moveUp(float tConst) { y -= speed * tConst / 4; }
 
 // TODO: maybe remove blast from inside the spaceship?
