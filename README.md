@@ -4,7 +4,7 @@ Disciplina Eng de Computação CEFET-MG
 
 ### Dependencies Ubuntu
 
-## use this command to find package names:
+Use this command to find package names:
 
 <center>
 apt-cache search ^libsdl | grep 1.2
