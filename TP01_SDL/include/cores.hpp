@@ -1,4 +1,4 @@
-typedef struct //binario
+typedef struct  // binario
 {
   float cor1;
   float cor2;

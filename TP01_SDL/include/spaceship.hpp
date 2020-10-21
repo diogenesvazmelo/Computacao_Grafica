@@ -1,15 +1,14 @@
 #ifndef SPACESHIP_HPP
 #define SPACESHIP_HPP
 
-class Blast
-{
-private:
-  float x, y;   // middle of the blast
-  float length; // top of blast is (x,y+length/2)
+class Blast {
+ private:
+  float x, y;    // middle of the blast
+  float length;  // top of blast is (x,y+length/2)
   float speed;
   float thickness;
 
-public:
+ public:
   Blast();
   Blast(float _x, float _y);
   Blast(float _x, float _y, float _length);
@@ -34,15 +33,14 @@ public:
   void moveDown();
 };
 
-class Spaceship
-{
-private:
+class Spaceship {
+ private:
   float x, y;
   float height, width;
   float speed;
   bool destroyed;
 
-public:
+ public:
   Spaceship();
   Spaceship(float _x, float _y);
   Spaceship(float _x, float _y, float _height, float _width);

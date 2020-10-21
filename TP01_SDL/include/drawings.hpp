@@ -8,27 +8,25 @@
 #include "SDL_opengl.h"
 #endif
 
-#include "../include/spaceship.hpp"
 #include <iostream>
 
-struct Coordenada
-{
+#include "../include/spaceship.hpp"
+
+struct Coordenada {
   float x;
   float y;
 };
 
-struct Inimigo
-{
+struct Inimigo {
   Coordenada inicial;
   Coordenada incremento;
   bool vivo;
 };
 
-namespace drws
-{
-  void resetScreen(int width, int height);
-  void drawsSpaceship(Spaceship sp, Color cor);
-  void drawsBlast(Blast b, Color c);
-} // namespace drws
+namespace drws {
+void resetScreen(int width, int height);
+void drawsSpaceship(Spaceship sp, Color cor);
+void drawsBlast(Blast b, Color c);
+}  // namespace drws
 
 #endif
