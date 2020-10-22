@@ -62,10 +62,10 @@ std::vector<bool> playerDirection(2, false);
 utils::STATES GAME_STATE = utils::PLAYING;
 std::vector<Spaceship> enemies(ENEMY_AMOUNT);
 std::vector<float> origCoord(ENEMY_AMOUNT);
-std::vector<std::pair<bool, Blast>> enemiesBlast(ENEMY_AMOUNT);
+std::vector<std::pair<bool, Blast> > enemiesBlast(ENEMY_AMOUNT);
 // framerate variables
 Uint32 frameRate = 30;
-Uint32 frameMS = (Uint32)std::floor(1000 / frameRate);
+Uint32 frameMS = (Uint32)::floor(1000 / frameRate);
 float movConst = (float)1;
 // VARIABLES --------------------------------------------------
 
@@ -89,17 +89,17 @@ bool init() {
   rend = SDL_CreateRenderer(window, -1, render_flags);
 
   // Loads textures
-  surface = IMG_Load("./imgs/player.png");
+  surface = IMG_Load("imgs/player.png");
   playerTex = SDL_CreateTextureFromSurface(rend, surface);
-  surface = IMG_Load("./imgs/alien.png");
+  surface = IMG_Load("imgs/alien.png");
   alienTex = SDL_CreateTextureFromSurface(rend, surface);
-  surface = IMG_Load("./imgs/background.gif");
+  surface = IMG_Load("imgs/background.gif");
   backgroundTex = SDL_CreateTextureFromSurface(rend, surface);
-  surface = IMG_Load("./imgs/victory_screen.bmp");
+  surface = IMG_Load("imgs/victory_screen.bmp");
   victoryTex = SDL_CreateTextureFromSurface(rend, surface);
-  surface = IMG_Load("./imgs/pause_screen.bmp");
+  surface = IMG_Load("imgs/pause_screen.bmp");
   pauseTex = SDL_CreateTextureFromSurface(rend, surface);
-  surface = IMG_Load("./imgs/game_over_screen.bmp");
+  surface = IMG_Load("imgs/game_over_screen.bmp");
   gameOverTex = SDL_CreateTextureFromSurface(rend, surface);
   // clears main-memory
   SDL_FreeSurface(surface);

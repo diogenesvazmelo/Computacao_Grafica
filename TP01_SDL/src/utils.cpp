@@ -10,7 +10,7 @@ SDL_Rect utils::makeRect(int _x, int _y, int _h, int _w) {
 }
 
 void utils::reset(Spaceship &player, std::vector<Spaceship> &enemies,
-                  std::vector<std::pair<bool, Blast>> &enemiesBlasts,
+                  std::vector<std::pair<bool, Blast> > &enemiesBlasts,
                   float window_width, float window_height, float padding,
                   float enemyArea) {
   player = Spaceship(window_width / 2 - 50, window_height - 50);
