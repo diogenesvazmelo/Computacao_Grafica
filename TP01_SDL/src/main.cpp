@@ -7,15 +7,18 @@
 
 #include "SDL2/SDL_opengl.h"
 #elif _WIN32
-#include <SDL.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <math.h>
+#include <stdio.h>
+#include <time.h>
 
-#include "SDL_opengl.h"
+#include "SDL2/SDL_opengl.h"
+
 #endif
 
-#include <SOIL.h>
-#include <SOIL/SOIL.h>
-#include <math.h>
-#include <time.h>
+//#include <SOIL.h>
+//#include <SOIL/SOIL.h>
 
 #include <cstdlib>
 #include <iostream>
