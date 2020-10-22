@@ -12,8 +12,11 @@
 #include <SDL2/SDL_opengl.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_ttf.h>
-#include <math.h>
-#include <time.h>
+
+
+#include <direct.h>
+#define GetCurrentDir _getcwd
+
 
 #include "SDL2/SDL_opengl.h"
 
@@ -21,9 +24,10 @@
 #include <stdio.h>
 //#include <SOIL.h>
 //#include <SOIL/SOIL.h>
-
+#include<iostream>
+#include <math.h>
+#include <time.h>
 #include <cstdlib>
-#include <iostream>
 #include <vector>
 
 #include "../include/spaceship.hpp"
@@ -40,6 +44,8 @@ const int ENEMY_AMOUNT = (int)(WINDOW_WIDTH / DEFAULT_ENEMY_AREA);
 const int VERTICAL_RANDOM_LIMITER = 2;
 const int ENEMY_BLAST_RANDOM_LIMITER = 100;
 bool ENEMY_DIRECTION = true;  // Right/true and Left/false !
+
+
 
 // VARIABLES --------------------------------------------------
 // SDL Section
@@ -92,17 +98,19 @@ bool init() {
   rend = SDL_CreateRenderer(window, -1, render_flags);
 
   // Loads textures
-  surface = IMG_Load("./imgs/player.png");
+  surface = IMG_Load("player.png");
+  std::cout <<surface<<std::endl;
   playerTex = SDL_CreateTextureFromSurface(rend, surface);
-  surface = IMG_Load("./imgs/alien.png");
+  surface = IMG_Load(".\imgs\alien.png");
   alienTex = SDL_CreateTextureFromSurface(rend, surface);
-  surface = IMG_Load("./imgs/background.gif");
+  surface = IMG_Load(".\imgs\background.gif");
   backgroundTex = SDL_CreateTextureFromSurface(rend, surface);
-  surface = IMG_Load("./imgs/victory_screen.bmp");
+  surface = IMG_Load(".\imgs\victory_screen.bmp");
   victoryTex = SDL_CreateTextureFromSurface(rend, surface);
-  surface = IMG_Load("./imgs/pause_screen.bmp");
+  surface = IMG_Load(".\imgs\pause_screen.bmp");
   pauseTex = SDL_CreateTextureFromSurface(rend, surface);
-  surface = IMG_Load("./imgs/game_over_screen.bmp");
+  surface = IMG_Load(".\imgs\game_over_screen.bmp");
+
   gameOverTex = SDL_CreateTextureFromSurface(rend, surface);
   // clears main-memory
   SDL_FreeSurface(surface);
@@ -128,6 +136,9 @@ bool init() {
 }
 
 int main(int argc, char *args[]) {
+    char buff[250];
+    GetCurrentDir(buff, 250);
+    printf("%s\n", buff);
   srand(time(NULL));
   if (!init()) exit(1);
   for (int i = 0; i < enemies.size(); i++) {
@@ -140,7 +151,7 @@ int main(int argc, char *args[]) {
 
   utils::reset(player, enemies, WINDOW_WIDTH, WINDOW_HEIGHT, DEFAULT_PADDING,
                DEFAULT_ENEMY_AREA);
-
+printf("\nTESTE\n");
   while (running) {
     Uint32 startMs = SDL_GetTicks();
     bool resetState = false;
@@ -198,12 +209,13 @@ int main(int argc, char *args[]) {
           }
       }
     }
-
+printf("\nTESTE\n");
     // CLEARS Screen
     SDL_RenderClear(rend);
 
     switch (GAME_STATE) {
       case utils::PLAYING: {
+          printf("\nPLAYING\n");
         if (resetState) {
           utils::reset(player, enemies, WINDOW_WIDTH, WINDOW_HEIGHT,
                        DEFAULT_PADDING, DEFAULT_ENEMY_AREA);
@@ -286,6 +298,9 @@ int main(int argc, char *args[]) {
 
         SDL_RenderCopy(rend, playerTex, NULL, playerRect);
 
+        SDL_SetRenderDrawColor(rend, 255, 0, 255, 0);
+        SDL_RenderFillRect(rend, playerRect);
+
         if (blastExists) {
           SDL_SetRenderDrawColor(rend, 255, 255, 255, 0);
           SDL_RenderFillRect(rend, blastRect);
@@ -336,7 +351,10 @@ int main(int argc, char *args[]) {
   // destroy textures
   SDL_DestroyTexture(playerTex);
   SDL_DestroyTexture(alienTex);
+  SDL_DestroyTexture(backgroundTex);
   SDL_DestroyTexture(pauseTex);
+  SDL_DestroyTexture(gameOverTex);
+  SDL_DestroyTexture(victoryTex);
 
   // destroy renderer
   SDL_DestroyRenderer(rend);
