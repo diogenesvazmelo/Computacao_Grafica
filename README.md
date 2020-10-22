@@ -2,18 +2,23 @@
 
 Disciplina Eng de Computação CEFET-MG
 
-### Dependencies Ubuntu
+### What to install
 
-Use this command to find package names:
+Run the following command to download the essential packages to build the application.
 
-<center>
-apt-cache search ^libsdl | grep 1.2
-</center>
+<code>sudo apt-get install build-essential</code> <br>
 
-- List:
-  - [ ] - libsdl1.2-dev
-  - [ ] - libsdl-ttf2.0-dev
-  - [ ] - libsdl-image1.2-dev
-  - [ ] - libsdl-mixer1.2-dev
+After installing the basic type the following command.
 
-I think to run it u can get the non "dev" versions, but to compile it you need these. Not quite sure yet.
+<code>sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev</code> <br>
+
+If for some unkown reason some package is missing, try to run the following command to find packages related to sdl2.
+<code>apt-cache search libsdl2</code>
+Remeber to get the "dev" version of the package.
+
+### How to run
+
+After installing all the necessary packages open a terminal and go to the TP01_SDL folder.
+Run the command: <code>make</code>
+That will compile the cpp files and generate the executable, it can be access in the <i>bin</i> folder, or simply by typing in the terminal: <code>./bin/game</code>
+That will run the game.
