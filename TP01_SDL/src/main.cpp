@@ -9,14 +9,16 @@
 #elif _WIN32
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_opengl.h>
+#include <SDL2/SDL_timer.h>
+#include <SDL2/SDL_ttf.h>
 #include <math.h>
-#include <stdio.h>
 #include <time.h>
 
 #include "SDL2/SDL_opengl.h"
 
 #endif
-
+#include <stdio.h>
 //#include <SOIL.h>
 //#include <SOIL/SOIL.h>
 
@@ -63,10 +65,10 @@ std::vector<bool> playerDirection(2, false);
 utils::STATES GAME_STATE = utils::PLAYING;
 std::vector<Spaceship> enemies(ENEMY_AMOUNT);
 std::vector<float> origCoord(ENEMY_AMOUNT);
-std::vector<std::pair<bool, Blast>> enemiesBlast(ENEMY_AMOUNT);
+std::vector<std::pair<bool, Blast> > enemiesBlast(ENEMY_AMOUNT);
 // framerate variables
 Uint32 frameRate = 30;
-Uint32 frameMS = (Uint32)std::floor(1000 / frameRate);
+Uint32 frameMS = (Uint32)::floor(1000 / frameRate);
 float movConst = (float)1;
 // VARIABLES --------------------------------------------------
 
