@@ -1,5 +1,14 @@
 #include "../include/utils.hpp"
 
+SDL_Rect utils::makeRect(int _x, int _y, int _h, int _w) {
+  SDL_Rect r;
+  r.x = _x;
+  r.y = _y;
+  r.h = _h;
+  r.w = _w;
+  return r;
+}
+
 void utils::checkState(SDL_Event event, STATES &game_state, bool &isPaused) {
   if (event.type == SDL_QUIT || event.key.keysym.sym == SDLK_ESCAPE) {
     game_state = utils::EXIT;

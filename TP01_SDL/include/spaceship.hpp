@@ -1,12 +1,12 @@
 #ifndef SPACESHIP_HPP
 #define SPACESHIP_HPP
 
+#include <SDL2/SDL.h>
+
 class Blast {
  private:
-  float x, y;    // middle of the blast
-  float length;  // top of blast is (x,y+length/2)
+  SDL_Rect rect;
   float speed;
-  float thickness;
 
  public:
   Blast();
@@ -20,14 +20,16 @@ class Blast {
   float getY();
   void setY(float _y);
 
+  SDL_Rect* getRect();
+
   float getLength();
   void setLength(float _length);
 
-  float getSpeed();
-  void setSpeed(float _speed);
-
   float getThickness();
   void setThickness(float _thickness);
+
+  float getSpeed();
+  void setSpeed(float _speed);
 
   void moveUp();
   void moveDown();
@@ -35,8 +37,7 @@ class Blast {
 
 class Spaceship {
  private:
-  float x, y;
-  float height, width;
+  SDL_Rect rect;
   float speed;
   bool destroyed;
 
@@ -52,6 +53,8 @@ class Spaceship {
 
   float getY();
   void setY(float _y);
+
+  SDL_Rect* getRect();
 
   float getHeight();
   void setHeight(float _height);

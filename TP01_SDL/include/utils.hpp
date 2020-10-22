@@ -14,6 +14,7 @@
 
 namespace utils {
 enum STATES { PLAYING, PAUSED, GAME_OVER, EXIT };
+SDL_Rect makeRect(int x, int y, int h, int w);
 void checkState(SDL_Event event, STATES &game_state, bool &isPaused);
 void checkPlayerDirection(SDL_Event event, std::vector<bool> &playerDirection);
 void shot(SDL_Event event, bool &blastExists, Blast &b, Spaceship sp);

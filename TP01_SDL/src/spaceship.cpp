@@ -6,96 +6,101 @@ const float DEFAULT_BLAST_THICKNESS = 5.0;
 
 // BLAST SECTION
 
-Blast::Blast() { x = y = length = speed = 0.0; }
+Blast::Blast() { rect.x = rect.y = rect.h = rect.w = speed = 0.0; }
 Blast::Blast(float _x, float _y) {
-  x = _x;
-  y = _y;
-  length = DEFAULT_BLAST_LENGTH;
+  rect.x = _x;
+  rect.y = _y;
+  rect.h = DEFAULT_BLAST_LENGTH;
+  rect.w = DEFAULT_BLAST_THICKNESS;
   speed = DEFAULT_BLAST_SPEED;
-  thickness = DEFAULT_BLAST_THICKNESS;
 }
 Blast::Blast(float _x, float _y, float _length) {
-  x = _x;
-  y = _y;
-  length = _length;
+  rect.x = _x;
+  rect.y = _y;
+  rect.h = _length;
+  rect.w = DEFAULT_BLAST_THICKNESS;
   speed = DEFAULT_BLAST_SPEED;
-  thickness = DEFAULT_BLAST_THICKNESS;
 }
 Blast::Blast(float _x, float _y, float _length, float _speed) {
-  x = _x;
-  y = _y;
-  length = _length;
+  rect.x = _x;
+  rect.y = _y;
+  rect.h = _length;
+  rect.w = DEFAULT_BLAST_THICKNESS;
   speed = _speed;
-  thickness = DEFAULT_BLAST_THICKNESS;
 }
 
-float Blast::getX() { return x; }
-void Blast::setX(float _x) { x = _x; }
-float Blast::getY() { return y; }
-void Blast::setY(float _y) { y = _y; }
+float Blast::getX() { return rect.x; }
+void Blast::setX(float _x) { rect.x = _x; }
 
-float Blast::getLength() { return length; }
-void Blast::setLength(float _length) { length = _length; }
+float Blast::getY() { return rect.y; }
+void Blast::setY(float _y) { rect.y = _y; }
+
+SDL_Rect* Blast::getRect() { return &rect; }
+
+float Blast::getLength() { return rect.h; }
+void Blast::setLength(float _length) { rect.h = _length; }
+
+float Blast::getThickness() { return rect.w; }
+void Blast::setThickness(float _thickness) { rect.w = _thickness; }
 
 float Blast::getSpeed() { return speed; }
 void Blast::setSpeed(float _speed) { speed = _speed; }
 
-float Blast::getThickness() { return thickness; }
-void Blast::setThickness(float _thickness) { thickness = _thickness; }
-
-void Blast::moveUp() { y -= speed / 2; }
-void Blast::moveDown() { y += speed / 2; }
-
+void Blast::moveUp() { rect.y -= speed; }
+void Blast::moveDown() { rect.y += speed; }
 // BLAST FINISHED
-const float DEFAULT_SPACESHIP_SPEED = 75;
+
+const float DEFAULT_SPACESHIP_SPEED = 100;
 const float DEFAULT_SPACESHIP_HEIGHT = 50.0;
 const float DEFAULT_SPACESHIP_WIDTH = 50.0;
 
 Spaceship::Spaceship() {
-  x = y = speed = height = width = 0.0;
+  rect.x = rect.y = rect.h = rect.w = speed = 0.0;
   destroyed = false;
 }
 Spaceship::Spaceship(float _x, float _y) {
-  x = _x;
-  y = _y;
-  height = DEFAULT_SPACESHIP_HEIGHT;
-  width = DEFAULT_SPACESHIP_WIDTH;
+  rect.x = _x;
+  rect.y = _y;
+  rect.h = DEFAULT_SPACESHIP_HEIGHT;
+  rect.w = DEFAULT_SPACESHIP_WIDTH;
   speed = DEFAULT_SPACESHIP_SPEED;
 }
 Spaceship::Spaceship(float _x, float _y, float _height, float _width) {
-  x = _x;
-  y = _y;
-  height = _height;
-  width = _width;
+  rect.x = _x;
+  rect.y = _y;
+  rect.h = _height;
+  rect.w = _width;
   speed = DEFAULT_SPACESHIP_SPEED;
 }
 Spaceship::Spaceship(float _x, float _y, float _speed) {
-  x = _x;
-  y = _y;
-  height = DEFAULT_SPACESHIP_HEIGHT;
-  width = DEFAULT_SPACESHIP_WIDTH;
+  rect.x = _x;
+  rect.y = _y;
+  rect.h = DEFAULT_SPACESHIP_HEIGHT;
+  rect.w = DEFAULT_SPACESHIP_WIDTH;
   speed = _speed;
 }
 Spaceship::Spaceship(float _x, float _y, float _height, float _width,
                      float _speed) {
-  x = _x;
-  y = _y;
-  height = _height;
-  width = _width;
+  rect.x = _x;
+  rect.y = _y;
+  rect.h = _height;
+  rect.w = _width;
   speed = _speed;
 }
 
-float Spaceship::getX() { return x; }
-void Spaceship::setX(float _x) { x = _x; }
+float Spaceship::getX() { return rect.x; }
+void Spaceship::setX(float _x) { rect.x = _x; }
 
-float Spaceship::getY() { return y; }
-void Spaceship::setY(float _y) { y = _y; }
+float Spaceship::getY() { return rect.y; }
+void Spaceship::setY(float _y) { rect.y = _y; }
 
-float Spaceship::getHeight() { return height; }
-void Spaceship::setHeight(float _height) { height = _height; }
+SDL_Rect* Spaceship::getRect() { return &rect; }
 
-float Spaceship::getWidth() { return width; }
-void Spaceship::setWidth(float _width) { width = _width; }
+float Spaceship::getHeight() { return rect.h; }
+void Spaceship::setHeight(float _height) { rect.h = _height; }
+
+float Spaceship::getWidth() { return rect.w; }
+void Spaceship::setWidth(float _width) { rect.w = _width; }
 
 float Spaceship::getSpeed() { return speed; }
 void Spaceship::setSpeed(float _speed) { speed = _speed; }
@@ -103,9 +108,7 @@ void Spaceship::setSpeed(float _speed) { speed = _speed; }
 bool Spaceship::isDestroyed() { return destroyed; }
 void Spaceship::setDestroyed(bool _destroyed) { destroyed = _destroyed; }
 
-void Spaceship::moveLeft(float tConst) { x -= speed * tConst; }
-void Spaceship::moveRight(float tConst) { x += speed * tConst; }
-void Spaceship::moveDown(float tConst) { y += speed * tConst / 4; }
-void Spaceship::moveUp(float tConst) { y -= speed * tConst / 4; }
-
-// TODO: maybe remove blast from inside the spaceship?
+void Spaceship::moveLeft(float tConst) { rect.x -= speed * tConst; }
+void Spaceship::moveRight(float tConst) { rect.x += speed * tConst; }
+void Spaceship::moveDown(float tConst) { rect.y += speed * tConst; }
+void Spaceship::moveUp(float tConst) { rect.y -= speed * tConst; }

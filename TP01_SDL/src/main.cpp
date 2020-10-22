@@ -1,9 +1,3 @@
-/// g++ -o main.cpp -lSDLmain -lSDL -lGL
-/// Design: piskel.com
-
-// codeblocks linker flags - diogenes: -lmingw32 -lSDLmain -lSDL -lopengl32
-// -lglu32 codeblocks linker flags - nicholas: -lSDL -lglut -lSOIL -lGLU -lGL
-
 #if __linux__
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -30,14 +24,14 @@
 #include "../include/spaceship.hpp"
 #include "../include/utils.hpp"
 
-const float WINDOW_WIDTH = 1280;
-const float WINDOW_HEIGHT = 720;
-const float DEFAULT_SHIP_WIDTH = 50.0;
-const float DEFAULT_SHIP_HEIGHT = 50.0;
-const float DEFAULT_ENEMY_SPACE = 100;
+const int WINDOW_WIDTH = 1280;
+const int WINDOW_HEIGHT = 720;
+const int DEFAULT_SHIP_WIDTH = 50;
+const int DEFAULT_SHIP_HEIGHT = 50;
+const int DEFAULT_ENEMY_AREA = 100;
 // space of movement of the enemy
-const float DEFAULT_PADDING = (DEFAULT_ENEMY_SPACE - DEFAULT_SHIP_WIDTH) / 2;
-const int ENEMY_AMOUNT = (int)(WINDOW_WIDTH / DEFAULT_ENEMY_SPACE);
+const float DEFAULT_PADDING = (DEFAULT_ENEMY_AREA - DEFAULT_SHIP_WIDTH) / 2;
+const int ENEMY_AMOUNT = (int)(WINDOW_WIDTH / DEFAULT_ENEMY_AREA);
 bool ENEMY_DIRECTION = true;  // Right/true and Left/false !
 
 Color VERMELHO = Color(1, 0, 0);
@@ -46,8 +40,34 @@ Color AZUL = Color(0, 0, 1);
 Color PRETO = Color(0, 0, 0);
 Color BRANCO = Color(1, 1, 1);
 
+// VARIABLES --------------------------------------------------
+// SDL Section
+SDL_Event event;
 SDL_Window *window;
-SDL_Renderer *renderer;
+SDL_Renderer *rend;
+SDL_Surface *surface;
+SDL_Texture *playerTex, *alienTex, *blastTex;
+SDL_Texture *pauseTex, *gameOverTex;
+
+SDL_Rect *playerRect, *blastRect;
+SDL_Rect pauseRect, gameOverRect;
+SDL_Rect *enemiesRects[ENEMY_AMOUNT];
+// State section
+bool running = true;
+bool blastExists = false;
+bool isPaused = false;
+// Components
+Spaceship player;  // Nave -> (x, y, h, w, speed)
+Blast playerBlast;
+std::vector<bool> playerDirection(2, false);
+utils::STATES GAME_STATE = utils::PLAYING;
+std::vector<Spaceship> enemies(ENEMY_AMOUNT);
+std::vector<float> origCoord(ENEMY_AMOUNT);
+// framerate variables
+Uint32 frameRate = 60;
+Uint32 frameMS = (Uint32)std::floor(1000 / frameRate);
+float movConst = (float)1.0 / frameRate;
+// VARIABLES --------------------------------------------------
 
 bool init() {
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -55,7 +75,7 @@ bool init() {
     return false;
   }
 
-  // Tamanho da janela
+  // Creates Window
   window = SDL_CreateWindow("Space Invaders", SDL_WINDOWPOS_UNDEFINED,
                             SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH,
                             WINDOW_HEIGHT, SDL_WINDOW_OPENGL);
@@ -64,131 +84,120 @@ bool init() {
     return false;
   }
 
-  // SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
-  // SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
-  // SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
-  // SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-  // SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-  // // Cor inicial -> color & opacity
-  // glClearColor(PRETO.r, PRETO.g, PRETO.b, 1.0);
-  // // area exibida
-  // glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-  // // sombra
-  // glShadeModel(GL_SMOOTH);  // sombreamento
-
-  // // 2D
-  // glMatrixMode(GL_PROJECTION);
-  // glLoadIdentity();  // desenho geometrico
-
-  // // 3D
-  // glDisable(GL_DEPTH_TEST);
-  //-----------------------------------------------------------------
-
-  // INITIALIZING IMAGE SUPPORT
-  //  int flags = IMG_INIT_JPG | IMG_INIT_PNG;
-  //  int initted = IMG_Init(flags);
-  //  if ((initted & flags) != flags) {
-  //    fprintf(stderr, "IMG_Init: Failed to init required jpg and png
-  //    support!\n"); fprintf(stderr, "IMG_Init: %s\n", IMG_GetError()); return
-  //    false;
-  //  }
-
+  // Creates Renderer
   Uint32 render_flags = SDL_RENDERER_ACCELERATED;
-  renderer = SDL_CreateRenderer(window, -1, render_flags);
+  rend = SDL_CreateRenderer(window, -1, render_flags);
+
+  // Loads textures
+  surface = IMG_Load("./imgs/player.bmp");
+  playerTex = SDL_CreateTextureFromSurface(rend, surface);
+  surface = IMG_Load("./imgs/alien.bmp");
+  alienTex = SDL_CreateTextureFromSurface(rend, surface);
+  surface = IMG_Load("./imgs/pause_screen.bmp");
+  pauseTex = SDL_CreateTextureFromSurface(rend, surface);
+  surface = IMG_Load("./imgs/game_over_screen.bmp");
+  gameOverTex = SDL_CreateTextureFromSurface(rend, surface);
+  // clears main-memory
+  SDL_FreeSurface(surface);
+
+  // Generates proper Rectangles
+  playerRect = player.getRect();
+  blastRect = playerBlast.getRect();
+  pauseRect = utils::makeRect(0, 0, WINDOW_HEIGHT, WINDOW_WIDTH);
+  gameOverRect = utils::makeRect(0, 0, WINDOW_HEIGHT, WINDOW_WIDTH);
+
+  // Connect each Rectangle to it's texture
+  SDL_QueryTexture(playerTex, NULL, NULL, &playerRect->w, &playerRect->h);
+  SDL_QueryTexture(blastTex, NULL, NULL, &blastRect->w, &blastRect->h);
+  for (int i = 0; i < ENEMY_AMOUNT; i++) {
+    enemiesRects[i] = enemies[i].getRect();
+    SDL_QueryTexture(alienTex, NULL, NULL, &enemiesRects[i]->w,
+                     &enemiesRects[i]->h);
+  }
+  SDL_QueryTexture(pauseTex, NULL, NULL, &pauseRect.w, &pauseRect.h);
 
   return true;
 }
 
 int main(int argc, char *args[]) {
   if (!init()) exit(1);
-
-  // SCREENS
-  //  pause_image = IMG_Load("./imgs/mario.png");
-  //  if (!pause_image) printf("ERROR IN IMAGE\n");
-
-  // VARIABLES
-  bool executando = true;
-  SDL_Event eventos;
-
-  // TODO: REMOVE THIS
-  std::vector<bool> playerDirection(2, false);
-  utils::STATES GAME_STATE = utils::PLAYING;
-  bool blastExists = false;
-  bool isPaused = false;
-
-  // Nave -> (x, y, h, w)
-  Spaceship player;
-  //  = Spaceship((WINDOW_WIDTH / 2), WINDOW_HEIGHT - 50, 30.0,
-  //                              DEFAULT_SHIP_WIDTH);
-  Blast playerBlast;
-
-  // Inimigos
-  std::vector<Spaceship> enemies(ENEMY_AMOUNT);
-  std::vector<float> origCoord(ENEMY_AMOUNT);
   for (int i = 0; i < enemies.size(); i++) {
     // adapts the space according to the enemy amount
     float enem_x = DEFAULT_PADDING * 2 * i + DEFAULT_PADDING +
                    DEFAULT_SHIP_WIDTH * i + DEFAULT_SHIP_WIDTH / 2;
-    enem_x += (WINDOW_WIDTH - (ENEMY_AMOUNT * DEFAULT_ENEMY_SPACE)) / 2;
+    enem_x += (WINDOW_WIDTH - (ENEMY_AMOUNT * DEFAULT_ENEMY_AREA)) / 2;
     origCoord[i] = enem_x;
   }
 
   utils::reset(player, enemies, WINDOW_WIDTH, WINDOW_HEIGHT, DEFAULT_PADDING,
-               DEFAULT_ENEMY_SPACE);
+               DEFAULT_ENEMY_AREA);
 
-  // framerate variables
-  Uint32 frameRate = 30;
-  Uint32 frameMS = (Uint32)std::floor(1000 / frameRate);
-  float movConst = (float)1.0 / frameRate;
-
-  // SDL_Surface *temp, *sprite;
-  // SDL_Rect rcSprite;
-  // SDL_Event event;
-  // Uint8 *keystate;
-  // int colorkey;
-
-  // // temp = SDL_LoadBMP("./imgs/player.bmp");
-  // // std::cout << temp << std::endl;
-  // // sprite = SDL_DisplayFormat(temp);
-  // // SDL_FreeSurface(temp);
-
-  // // /* setup sprite colorkey and turn on RLE */
-  // // colorkey = SDL_MapRGB(screen->format, 255, 0, 255);
-  // // SDL_SetColorKey(sprite, SDL_SRCCOLORKEY | SDL_RLEACCEL, colorkey);
-
-  while (executando) {
+  while (running) {
     Uint32 startMs = SDL_GetTicks();
-
     bool resetState = false;
-    // Eventos - teclado
-    while (SDL_PollEvent(&eventos)) {
-      utils::checkState(eventos, GAME_STATE, isPaused);
-      utils::checkPlayerDirection(eventos, playerDirection);
-      utils::shot(eventos, blastExists, playerBlast, player);
-      resetState = utils::checkResetEvent(eventos);
+    // event - teclado
+    while (SDL_PollEvent(&event)) {
+      switch (event.type) {
+        case SDL_QUIT:
+          GAME_STATE = utils::EXIT;
+          break;
+        case SDL_KEYDOWN:
+          // keyboard API for key pressed
+          switch (event.key.keysym.scancode) {
+            case SDL_SCANCODE_ESCAPE:
+              GAME_STATE = utils::EXIT;
+              break;
+            case SDL_SCANCODE_A:
+            case SDL_SCANCODE_LEFT:
+              if (utils::canGoLeft(player, movConst) &&
+                  GAME_STATE == utils::PLAYING)
+                player.moveLeft(movConst);
+              break;
+            case SDL_SCANCODE_D:
+            case SDL_SCANCODE_RIGHT:
+              if (utils::canGoRight(player, movConst, WINDOW_WIDTH) &&
+                  GAME_STATE == utils::PLAYING)
+                player.moveRight(movConst);
+              break;
+
+            case SDL_SCANCODE_P:
+              if (GAME_STATE == utils::PLAYING) {
+                GAME_STATE = utils::PAUSED;
+              } else if (GAME_STATE == utils::PAUSED) {
+                GAME_STATE = utils::PLAYING;
+              }
+              break;
+            case SDL_SCANCODE_R:
+              resetState = true;
+              break;
+            case SDL_SCANCODE_SPACE:
+              if (blastExists == false) {
+                playerBlast = Blast(player.getX(), player.getY());
+                playerBlast.setThickness(
+                    5.0);  // TODO: why do i need to do this?
+              }
+              blastExists = true;
+              break;
+          }
+      }
     }
+
+    // CLEARS Screen
+    SDL_RenderClear(rend);
 
     switch (GAME_STATE) {
       case utils::PLAYING: {
         if (resetState) {
           utils::reset(player, enemies, WINDOW_WIDTH, WINDOW_HEIGHT,
-                       DEFAULT_PADDING, DEFAULT_ENEMY_SPACE);
+                       DEFAULT_PADDING, DEFAULT_ENEMY_AREA);
           blastExists = false;
         }
-        /// LOGICA
-        if (playerDirection[0] && utils::canGoLeft(player, movConst))
-          player.moveLeft(movConst);
-        if (playerDirection[1] &&
-            utils::canGoRight(player, movConst, WINDOW_WIDTH))
-          player.moveRight(movConst);
 
         if (blastExists) {
           playerBlast.moveUp();
-          // TODO: check out of bounds
           if (utils::outOfBounds(playerBlast, WINDOW_WIDTH, WINDOW_HEIGHT)) {
             blastExists = false;
           }
-          // Check colission with enemies
           for (int i = 0; i < ENEMY_AMOUNT; i++) {
             if (!enemies[i].isDestroyed() &&
                 utils::collision(playerBlast, enemies[i])) {
@@ -201,8 +210,9 @@ int main(int argc, char *args[]) {
 
         for (int i = 0; i < ENEMY_AMOUNT; i++) {
           if (!enemies[i].isDestroyed()) {
+            enemies[i].moveDown(movConst);
             utils::enemyMovement(
-                enemies[i], (float)movConst, origCoord[i] - DEFAULT_PADDING,
+                enemies[i], movConst, origCoord[i] - DEFAULT_PADDING,
                 origCoord[i] + DEFAULT_PADDING, ENEMY_DIRECTION);
             if (utils::outOfBounds(enemies[i], WINDOW_WIDTH, WINDOW_HEIGHT))
               GAME_STATE = utils::GAME_OVER;
@@ -211,49 +221,26 @@ int main(int argc, char *args[]) {
           }
         }
 
-        // TODO: check if enemy got to the bottom of the screen.
-
-        drws::resetScreen(WINDOW_WIDTH, WINDOW_HEIGHT);
-
-        // Desenho
-        for (int i = 0; i < ENEMY_AMOUNT; i++) {
-          if (!enemies[i].isDestroyed()) drws::drawsSpaceship(enemies[i], AZUL);
-          enemies[i].moveDown(movConst);
-        }
-
-        // Desenha a nave do personagem
-        drws::drawsSpaceship(player, VERMELHO);
-        // /* draw the sprite */
-        // rcSprite.x = (Sint16)player.getX();
-        // rcSprite.y = (Sint16)player.getY();
-        // rcSprite.w = (Sint16)player.getWidth();
-        // rcSprite.h = (Sint16)player.getHeight();
-        // std::cout << SDL_BlitSurface(screen, NULL, screen, &rcSprite)
-        //           << std::endl;
-
+        // clears the screen
+        SDL_RenderCopy(rend, playerTex, NULL, playerRect);
         if (blastExists) {
-          drws::drawsBlast(playerBlast, BRANCO);
+        }
+        for (int i = 0; i < ENEMY_AMOUNT; i++) {
+          if (!enemies[i].isDestroyed())
+            SDL_RenderCopy(rend, alienTex, NULL, enemiesRects[i]);
         }
         break;
       }
       case utils::PAUSED: {
-        //   Spaceship(float _x, float _y, float _height, float _width);
-        Spaceship teste =
-            Spaceship(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 300.0, 300.0);
-        drws::resetScreen(WINDOW_WIDTH, WINDOW_HEIGHT);
-        drws::drawsSpaceship(teste, BRANCO);
+        SDL_RenderCopy(rend, pauseTex, NULL, &pauseRect);
         break;
       }
       case utils::GAME_OVER: {
-        //   Spaceship(float _x, float _y, float _height, float _width);
-        Spaceship teste =
-            Spaceship(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 300.0, 300.0);
-        drws::resetScreen(WINDOW_WIDTH, WINDOW_HEIGHT);
-        drws::drawsSpaceship(teste, VERDE);
+        SDL_RenderCopy(rend, gameOverTex, NULL, &gameOverRect);
         break;
       }
       case utils::EXIT:
-        executando = false;
+        running = false;
         break;
 
       default:
@@ -261,30 +248,25 @@ int main(int argc, char *args[]) {
         break;
     }
 
-    // Uint32 endMs = SDL_GetTicks();
-    // Uint32 delayMS = frameMS - (endMs - startMs);
-    // if (delayMS > 0) SDL_Delay(delayMS);
+    SDL_RenderPresent(rend);
 
-    // Fecha matriz
-    glPopMatrix();
-    // /// Animacao
-    // SDL_GL_SwapBuffers();
-
-    // clears the screen
-    SDL_RenderClear(screen);
-    // SDL_RenderCopy(scre, tex, NULL, &dest);
-
-    // triggers the double buffers
-    // for multiple rendering
-    SDL_RenderPresent(screen);
-
-    // calculates to 60 fps
-    SDL_Delay(1000 / frameRate);
+    // guarantees the 60 fps
+    Uint32 endMs = SDL_GetTicks();
+    Uint32 delayMS = frameMS - (endMs - startMs);
+    SDL_Delay(delayMS);
   }
 
   // ------------------------------------------------------------------
-  glDisable(GL_BLEND);  // Para Windows apenas
-  SDL_Quit();
 
+  // destroy textures
+  SDL_DestroyTexture(playerTex);
+  SDL_DestroyTexture(alienTex);
+  SDL_DestroyTexture(pauseTex);
+
+  // destroy renderer
+  SDL_DestroyRenderer(rend);
+
+  // destroy window
+  SDL_DestroyWindow(window);
   return 0;
 }

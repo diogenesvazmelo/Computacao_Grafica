@@ -1,5 +1,5 @@
 CXX 			:= g++
-CXXFLAGS 	:= -std=c++1z -lSDL2 -lSOIL -lglut -lGLEW -lGLU -lGL
+CXXFLAGS 	:= -std=c++1z -lSDL2 -lSDL2_image -lSOIL -lglut -lGLEW -lGLU -lGL
 LDFLAGS  	:= -L/usr/lib -lstdc++ -lm
 OBJ_DIR 	:= ./obj
 APP_DIR		:= ./bin
@@ -19,7 +19,7 @@ $(OBJ_DIR)/%.o: %.cpp
 
 $(APP_DIR)/$(TARGET): $(OBJECTS)
 	@mkdir -p $(@D)
-	$(CXX) -o $(APP_DIR)/$(TARGET) $^ $(`sld2-config --libs`) $(CXXFLAGS)
+	$(CXX) -o $(APP_DIR)/$(TARGET) $^ $(CXXFLAGS)
  
 .PHONY: all build clean debug release
 
