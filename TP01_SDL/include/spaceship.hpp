@@ -31,8 +31,8 @@ class Blast {
   float getSpeed();
   void setSpeed(float _speed);
 
-  void moveUp();
-  void moveDown();
+  void moveUp(float tConst);
+  void moveDown(float tConst);
 };
 
 class Spaceship {

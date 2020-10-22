@@ -14,6 +14,8 @@
 
 #include <SOIL.h>
 #include <SOIL/SOIL.h>
+#include <math.h>
+#include <time.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -30,7 +32,8 @@ const int DEFAULT_ENEMY_AREA = 100;
 // space of movement of the enemy
 const float DEFAULT_PADDING = (DEFAULT_ENEMY_AREA - DEFAULT_SHIP_WIDTH) / 2;
 const int ENEMY_AMOUNT = (int)(WINDOW_WIDTH / DEFAULT_ENEMY_AREA);
-const int VERTICAL_SPEED_LIMITER = 5;
+const int VERTICAL_RANDOM_LIMITER = 5;
+const int ENEMY_BLAST_RANDOM_LIMITER = 1;
 bool ENEMY_DIRECTION = true;  // Right/true and Left/false !
 
 // VARIABLES --------------------------------------------------
@@ -49,7 +52,6 @@ SDL_Rect *enemiesRects[ENEMY_AMOUNT];
 bool running = true;
 bool blastExists = false;
 bool isPaused = false;
-int vecticalMov = 0;
 // Components
 Spaceship player;  // Nave -> (x, y, h, w, speed)
 Blast playerBlast;
@@ -57,6 +59,7 @@ std::vector<bool> playerDirection(2, false);
 utils::STATES GAME_STATE = utils::PLAYING;
 std::vector<Spaceship> enemies(ENEMY_AMOUNT);
 std::vector<float> origCoord(ENEMY_AMOUNT);
+std::vector<std::pair<bool, Blast>> enemiesBlast(ENEMY_AMOUNT);
 // framerate variables
 Uint32 frameRate = 60;
 Uint32 frameMS = (Uint32)std::floor(1000 / frameRate);
@@ -115,6 +118,7 @@ bool init() {
 }
 
 int main(int argc, char *args[]) {
+  srand(time(NULL));
   if (!init()) exit(1);
   for (int i = 0; i < enemies.size(); i++) {
     // adapts the space according to the enemy amount
@@ -186,11 +190,13 @@ int main(int argc, char *args[]) {
           blastExists = false;
         }
 
+        // Player Blast check
         if (blastExists) {
-          playerBlast.moveUp();
+          playerBlast.moveUp(movConst);
           if (utils::outOfBounds(playerBlast, WINDOW_WIDTH, WINDOW_HEIGHT)) {
             blastExists = false;
           }
+
           for (int i = 0; i < ENEMY_AMOUNT; i++) {
             if (!enemies[i].isDestroyed() &&
                 utils::collision(playerBlast, enemies[i])) {
@@ -201,18 +207,57 @@ int main(int argc, char *args[]) {
           }
         }
 
+        // Enemies Blasts check
+        for (int i = 0; i < ENEMY_AMOUNT; i++) {
+          if (enemiesBlast[i].first) {  // blasts exists
+            // std::cout << enemiesBlast[i].second.getX() << " "
+            //           << enemiesBlast[i].second.getY() << std::endl;
+            if (utils::outOfBounds(enemiesBlast[i].second, WINDOW_WIDTH,
+                                   WINDOW_HEIGHT)) {
+              std::cout << "OUT\n";
+              enemiesBlast[i].first = false;
+            }
+            if (utils::collision(enemiesBlast[i].second, player)) {
+              // std::cout << "DIED\n";
+              GAME_STATE = utils::GAME_OVER;
+            }
+          }
+        }
+        if (GAME_STATE == utils::GAME_OVER) break;
+
         for (int i = 0; i < ENEMY_AMOUNT; i++) {
           if (!enemies[i].isDestroyed()) {
-            if (vecticalMov == 0) enemies[i].moveDown(movConst);
-            vecticalMov = rand() % VERTICAL_SPEED_LIMITER;
-            utils::enemyMovement(
-                enemies[i], movConst, origCoord[i] - DEFAULT_PADDING,
-                origCoord[i] + DEFAULT_PADDING, ENEMY_DIRECTION);
-            if (utils::outOfBounds(enemies[i], WINDOW_WIDTH, WINDOW_HEIGHT))
-              GAME_STATE = utils::GAME_OVER;
-            if (utils::collision(player, enemies[i]))
-              GAME_STATE = utils::GAME_OVER;
+            int chance;
+            // random descend movement
+            chance = rand() % VERTICAL_RANDOM_LIMITER;
+            if (chance == 0) enemies[i].moveDown(movConst);
+
+            // random fire by enemy[i]
+            chance = rand() % ENEMY_BLAST_RANDOM_LIMITER;
+            if (chance == 0 && !enemiesBlast[i].first) {
+              std::cout << "BANG\n";
+              enemiesBlast[i].first = true;
+              enemiesBlast[i].second = Blast(
+                  enemies[i].getX(), enemies[i].getY() + 400,
+                  playerBlast.getLength() / 2, playerBlast.getSpeed() / 3);
+            }
           }
+          // if enemy blast exists move it down
+          if (enemiesBlast[i].first) {
+            // std::cout << "DOWN\n";
+            enemiesBlast[i].second.moveDown(movConst);
+          }
+
+          // lateral movement
+          utils::enemyMovement(enemies[i], movConst,
+                               origCoord[i] - DEFAULT_PADDING,
+                               origCoord[i] + DEFAULT_PADDING, ENEMY_DIRECTION);
+
+          // check out of bounds and collision
+          if (utils::outOfBounds(enemies[i], WINDOW_WIDTH, WINDOW_HEIGHT))
+            GAME_STATE = utils::GAME_OVER;
+          if (utils::collision(player, enemies[i]))
+            GAME_STATE = utils::GAME_OVER;
         }
 
         // SDL_RenderCopy(rend, backgroundTex, NULL, &backgroundRect);
@@ -223,12 +268,21 @@ int main(int argc, char *args[]) {
           // Render rect
           SDL_RenderFillRect(rend, blastRect);
           // Render the rect to the screen
-          SDL_RenderPresent(rend);
 
           // set color back to normal for background.
           SDL_SetRenderDrawColor(rend, 0, 0, 0, 0);
         }
         for (int i = 0; i < ENEMY_AMOUNT; i++) {
+          if (enemiesBlast[i].first) {
+            // Set render color to blue ( rect will be rendered in this color )
+            SDL_SetRenderDrawColor(rend, 255, 0, 255, 0);
+            // Render rect
+            SDL_RenderFillRect(rend, enemiesBlast[i].second.getRect());
+            // Render the rect to the screen
+
+            // set color back to normal for background.
+            SDL_SetRenderDrawColor(rend, 0, 0, 0, 0);
+          }
           if (!enemies[i].isDestroyed())
             SDL_RenderCopy(rend, alienTex, NULL, enemiesRects[i]);
         }
