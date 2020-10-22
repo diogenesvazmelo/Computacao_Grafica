@@ -33,7 +33,7 @@ const int DEFAULT_ENEMY_AREA = 100;
 const float DEFAULT_PADDING = (DEFAULT_ENEMY_AREA - DEFAULT_SHIP_WIDTH) / 2;
 const int ENEMY_AMOUNT = (int)(WINDOW_WIDTH / DEFAULT_ENEMY_AREA);
 const int VERTICAL_RANDOM_LIMITER = 5;
-const int ENEMY_BLAST_RANDOM_LIMITER = 1;
+const int ENEMY_BLAST_RANDOM_LIMITER = 100;
 bool ENEMY_DIRECTION = true;  // Right/true and Left/false !
 
 // VARIABLES --------------------------------------------------
@@ -42,12 +42,13 @@ SDL_Event event;
 SDL_Window *window;
 SDL_Renderer *rend;
 SDL_Surface *surface;
-SDL_Texture *playerTex, *alienTex, *blastTex;
+SDL_Texture *playerTex, *alienTex;
 SDL_Texture *backgroundTex, *pauseTex, *gameOverTex;
 
 SDL_Rect *playerRect, *blastRect;
 SDL_Rect backgroundRect, pauseRect, gameOverRect;
 SDL_Rect *enemiesRects[ENEMY_AMOUNT];
+SDL_Rect *enemiesBlastRect[ENEMY_AMOUNT];
 // State section
 bool running = true;
 bool blastExists = false;
@@ -61,7 +62,7 @@ std::vector<Spaceship> enemies(ENEMY_AMOUNT);
 std::vector<float> origCoord(ENEMY_AMOUNT);
 std::vector<std::pair<bool, Blast>> enemiesBlast(ENEMY_AMOUNT);
 // framerate variables
-Uint32 frameRate = 60;
+Uint32 frameRate = 30;
 Uint32 frameMS = (Uint32)std::floor(1000 / frameRate);
 float movConst = (float)1;
 // VARIABLES --------------------------------------------------
@@ -102,12 +103,14 @@ bool init() {
   // Generates proper Rectangles
   playerRect = player.getRect();
   blastRect = playerBlast.getRect();
+  for (int i = 0; i < ENEMY_AMOUNT; i++) {
+    enemiesBlastRect[i] = enemiesBlast[i].second.getRect();
+  }
   backgroundRect = utils::makeRect(0, 0, WINDOW_HEIGHT, WINDOW_WIDTH);
 
   // Connect each Rectangle to it's texture
 
   SDL_QueryTexture(playerTex, NULL, NULL, &playerRect->w, &playerRect->h);
-  SDL_QueryTexture(blastTex, NULL, NULL, &blastRect->w, &blastRect->h);
   for (int i = 0; i < ENEMY_AMOUNT; i++) {
     enemiesRects[i] = enemies[i].getRect();
     SDL_QueryTexture(alienTex, NULL, NULL, &enemiesRects[i]->w,
@@ -122,8 +125,8 @@ int main(int argc, char *args[]) {
   if (!init()) exit(1);
   for (int i = 0; i < enemies.size(); i++) {
     // adapts the space according to the enemy amount
-    float enem_x = DEFAULT_PADDING * 2 * i + DEFAULT_PADDING +
-                   DEFAULT_SHIP_WIDTH * i + DEFAULT_SHIP_WIDTH / 2;
+    float enem_x =
+        DEFAULT_PADDING * 2 * i + DEFAULT_PADDING + DEFAULT_SHIP_WIDTH * i;
     enem_x += (WINDOW_WIDTH - (ENEMY_AMOUNT * DEFAULT_ENEMY_AREA)) / 2;
     origCoord[i] = enem_x;
   }
@@ -145,6 +148,14 @@ int main(int argc, char *args[]) {
           switch (event.key.keysym.scancode) {
             case SDL_SCANCODE_ESCAPE:
               GAME_STATE = utils::EXIT;
+              break;
+            case SDL_SCANCODE_W:
+            case SDL_SCANCODE_UP:
+              if (GAME_STATE == utils::PLAYING) player.moveUp(movConst);
+              break;
+            case SDL_SCANCODE_S:
+            case SDL_SCANCODE_DOWN:
+              if (GAME_STATE == utils::PLAYING) player.moveDown(movConst);
               break;
             case SDL_SCANCODE_A:
             case SDL_SCANCODE_LEFT:
@@ -171,7 +182,8 @@ int main(int argc, char *args[]) {
               break;
             case SDL_SCANCODE_SPACE:
               if (blastExists == false) {
-                playerBlast = Blast(player.getX(), player.getY());
+                playerBlast =
+                    Blast(player.getX() + player.getWidth() / 2, player.getY());
               }
               blastExists = true;
               break;
@@ -210,14 +222,13 @@ int main(int argc, char *args[]) {
         // Enemies Blasts check
         for (int i = 0; i < ENEMY_AMOUNT; i++) {
           if (enemiesBlast[i].first) {  // blasts exists
-            // std::cout << enemiesBlast[i].second.getX() << " "
-            //           << enemiesBlast[i].second.getY() << std::endl;
             if (utils::outOfBounds(enemiesBlast[i].second, WINDOW_WIDTH,
                                    WINDOW_HEIGHT)) {
-              std::cout << "OUT\n";
+              // std::cout << "OUT\n";
               enemiesBlast[i].first = false;
             }
             if (utils::collision(enemiesBlast[i].second, player)) {
+              enemiesBlast[i].first = false;
               // std::cout << "DIED\n";
               GAME_STATE = utils::GAME_OVER;
             }
@@ -235,17 +246,20 @@ int main(int argc, char *args[]) {
             // random fire by enemy[i]
             chance = rand() % ENEMY_BLAST_RANDOM_LIMITER;
             if (chance == 0 && !enemiesBlast[i].first) {
-              std::cout << "BANG\n";
+              // std::cout << "BANG\n";
               enemiesBlast[i].first = true;
-              enemiesBlast[i].second = Blast(
-                  enemies[i].getX(), enemies[i].getY() + 400,
-                  playerBlast.getLength() / 2, playerBlast.getSpeed() / 3);
+              enemiesBlast[i].second =
+                  Blast(enemies[i].getX() + enemies[i].getWidth() / 2,
+                        enemies[i].getY() + playerBlast.getLength(),
+                        playerBlast.getLength(), playerBlast.getSpeed());
             }
           }
           // if enemy blast exists move it down
           if (enemiesBlast[i].first) {
             // std::cout << "DOWN\n";
-            enemiesBlast[i].second.moveDown(movConst);
+            enemiesBlast[i].second.setY(enemiesBlast[i].second.getY() +
+                                        enemiesBlast[i].second.getSpeed());
+            // enemiesBlast[i].second.moveDown(movConst);
           }
 
           // lateral movement
@@ -261,31 +275,23 @@ int main(int argc, char *args[]) {
         }
 
         // SDL_RenderCopy(rend, backgroundTex, NULL, &backgroundRect);
-        SDL_RenderCopy(rend, playerTex, NULL, playerRect);
-        if (blastExists) {
-          // Set render color to blue ( rect will be rendered in this color )
-          SDL_SetRenderDrawColor(rend, 255, 0, 255, 0);
-          // Render rect
-          SDL_RenderFillRect(rend, blastRect);
-          // Render the rect to the screen
 
-          // set color back to normal for background.
-          SDL_SetRenderDrawColor(rend, 0, 0, 0, 0);
+        SDL_RenderCopy(rend, playerTex, NULL, playerRect);
+
+        if (blastExists) {
+          SDL_SetRenderDrawColor(rend, 255, 0, 255, 0);
+          SDL_RenderFillRect(rend, blastRect);
         }
         for (int i = 0; i < ENEMY_AMOUNT; i++) {
           if (enemiesBlast[i].first) {
-            // Set render color to blue ( rect will be rendered in this color )
             SDL_SetRenderDrawColor(rend, 255, 0, 255, 0);
-            // Render rect
-            SDL_RenderFillRect(rend, enemiesBlast[i].second.getRect());
-            // Render the rect to the screen
-
-            // set color back to normal for background.
-            SDL_SetRenderDrawColor(rend, 0, 0, 0, 0);
+            SDL_RenderFillRect(rend, enemiesBlastRect[i]);
           }
           if (!enemies[i].isDestroyed())
             SDL_RenderCopy(rend, alienTex, NULL, enemiesRects[i]);
         }
+        // set color back to normal for background.
+        SDL_SetRenderDrawColor(rend, 0, 0, 0, 0);
         break;
       }
       case utils::PAUSED: {
