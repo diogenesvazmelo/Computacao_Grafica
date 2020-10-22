@@ -10,6 +10,7 @@ SDL_Rect utils::makeRect(int _x, int _y, int _h, int _w) {
 }
 
 void utils::reset(Spaceship &player, std::vector<Spaceship> &enemies,
+                  std::vector<std::pair<bool, Blast>> &enemiesBlasts,
                   float window_width, float window_height, float padding,
                   float enemyArea) {
   player = Spaceship(window_width / 2 - 50, window_height - 50);
@@ -21,6 +22,10 @@ void utils::reset(Spaceship &player, std::vector<Spaceship> &enemies,
     float enem_x = padding * 2 * i + padding + 50 * i + 50 / 2;
     enem_x += (window_width - (enemies.size() * enemyArea)) / 2;
     enemies[i] = Spaceship(enem_x, 30);
+  }
+
+  for (int i = 0; i < enemiesBlasts.size(); i++) {
+    enemiesBlasts[i].first = false;
   }
 }
 

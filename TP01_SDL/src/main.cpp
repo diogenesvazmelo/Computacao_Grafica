@@ -3,7 +3,6 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_opengl.h>
 #include <SDL2/SDL_timer.h>
-#include <SDL2/SDL_ttf.h>
 
 #include "SDL2/SDL_opengl.h"
 #elif _WIN32
@@ -136,8 +135,8 @@ int main(int argc, char *args[]) {
     origCoord[i] = enem_x;
   }
 
-  utils::reset(player, enemies, WINDOW_WIDTH, WINDOW_HEIGHT, DEFAULT_PADDING,
-               DEFAULT_ENEMY_AREA);
+  utils::reset(player, enemies, enemiesBlast, WINDOW_WIDTH, WINDOW_HEIGHT,
+               DEFAULT_PADDING, DEFAULT_ENEMY_AREA);
 
   while (running) {
     Uint32 startMs = SDL_GetTicks();
@@ -203,8 +202,8 @@ int main(int argc, char *args[]) {
     switch (GAME_STATE) {
       case utils::PLAYING: {
         if (resetState) {
-          utils::reset(player, enemies, WINDOW_WIDTH, WINDOW_HEIGHT,
-                       DEFAULT_PADDING, DEFAULT_ENEMY_AREA);
+          utils::reset(player, enemies, enemiesBlast, WINDOW_WIDTH,
+                       WINDOW_HEIGHT, DEFAULT_PADDING, DEFAULT_ENEMY_AREA);
           blastExists = false;
         }
 
@@ -301,6 +300,12 @@ int main(int argc, char *args[]) {
         break;
       }
       case utils::VICTORY: {
+        if (resetState) {
+          utils::reset(player, enemies, enemiesBlast, WINDOW_WIDTH,
+                       WINDOW_HEIGHT, DEFAULT_PADDING, DEFAULT_ENEMY_AREA);
+          blastExists = false;
+          GAME_STATE = utils::PLAYING;
+        }
         SDL_RenderCopy(rend, victoryTex, NULL, &backgroundRect);
         break;
       }
@@ -309,6 +314,12 @@ int main(int argc, char *args[]) {
         break;
       }
       case utils::GAME_OVER: {
+        if (resetState) {
+          utils::reset(player, enemies, enemiesBlast, WINDOW_WIDTH,
+                       WINDOW_HEIGHT, DEFAULT_PADDING, DEFAULT_ENEMY_AREA);
+          blastExists = false;
+          GAME_STATE = utils::PLAYING;
+        }
         SDL_RenderCopy(rend, gameOverTex, NULL, &backgroundRect);
         break;
       }

@@ -10,7 +10,7 @@ Run the following command to download the essential packages to build the applic
 
 After installing the basic type the following command.
 
-<code>sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev</code> <br>
+<code>sudo apt-get install libsdl2-dev libsdl2-image-dev</code> <br>
 
 If for some unkown reason some package is missing, try to run the following command to find packages related to sdl2.
 <code>apt-cache search libsdl2</code>

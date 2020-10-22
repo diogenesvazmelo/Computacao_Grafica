@@ -15,6 +15,7 @@ namespace utils {
 enum STATES { PLAYING, VICTORY, PAUSED, GAME_OVER, EXIT };
 SDL_Rect makeRect(int _x, int _y, int _h, int _w);
 void reset(Spaceship &player, std::vector<Spaceship> &enemies,
+           std::vector<std::pair<bool, Blast>> &enemiesBlasts,
            float window_width, float window_height, float padding,
            float enemyArea);
 
