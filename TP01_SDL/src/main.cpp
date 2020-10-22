@@ -7,13 +7,19 @@
 
 #include "SDL2/SDL_opengl.h"
 #elif _WIN32
-#include <SDL.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
-#include "SDL_opengl.h"
+#include "SDL2/SDL_opengl.h"
+
+#include <stdio.h>
+#include <math.h>
+#include <time.h>
+
 #endif
 
-#include <SOIL.h>
-#include <SOIL/SOIL.h>
+//#include <SOIL.h>
+//#include <SOIL/SOIL.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -59,7 +65,7 @@ std::vector<Spaceship> enemies(ENEMY_AMOUNT);
 std::vector<float> origCoord(ENEMY_AMOUNT);
 // framerate variables
 Uint32 frameRate = 60;
-Uint32 frameMS = (Uint32)std::floor(1000 / frameRate);
+Uint32 frameMS = (Uint32)::floor(1000 / frameRate);
 float movConst = (float)1;
 // VARIABLES --------------------------------------------------
 
