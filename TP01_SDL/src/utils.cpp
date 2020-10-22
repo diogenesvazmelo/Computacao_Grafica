@@ -93,7 +93,6 @@ bool utils::collision(Blast blast, Spaceship enemy) {
       enemy.getY() + enemy.getHeight() / 2,
   };
 
-  // TODO: CONFLICT
   if (b[0] < e[1] && b[1] > e[0] && b[2] < e[3] && b[3] > e[2]) return true;
 
   return false;

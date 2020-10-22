@@ -1,6 +1,6 @@
 #include "../include/spaceship.hpp"
 
-const float DEFAULT_BLAST_SPEED = 10.0;
+const float DEFAULT_BLAST_SPEED = 5.0;
 const float DEFAULT_BLAST_LENGTH = 20.0;
 const float DEFAULT_BLAST_THICKNESS = 5.0;
 
@@ -46,8 +46,9 @@ void Blast::setThickness(float _thickness) { rect.w = _thickness; }
 float Blast::getSpeed() { return speed; }
 void Blast::setSpeed(float _speed) { speed = _speed; }
 
-void Blast::moveUp() { rect.y -= speed; }
-void Blast::moveDown() { rect.y += speed; }
+void Blast::moveUp(float tConst) { rect.y -= speed * tConst; }
+void Blast::moveDown(float tConst) { rect.y += speed * tConst; }
+
 // BLAST FINISHED
 
 const float DEFAULT_SPACESHIP_SPEED = 2;
