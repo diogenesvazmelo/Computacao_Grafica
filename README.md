@@ -8,7 +8,7 @@ Run the following command to download the essential packages to build the applic
 
 <code>sudo apt-get install build-essential</code> <br>
 
-After installing the basic type the following command.
+After installing the basic packages, type the following command.
 
 <code>sudo apt-get install libsdl2-dev libsdl2-image-dev</code> <br>
 
