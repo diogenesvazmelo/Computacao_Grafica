@@ -50,7 +50,7 @@ void Blast::moveUp() { rect.y -= speed; }
 void Blast::moveDown() { rect.y += speed; }
 // BLAST FINISHED
 
-const float DEFAULT_SPACESHIP_SPEED = 100;
+const float DEFAULT_SPACESHIP_SPEED = 2;
 const float DEFAULT_SPACESHIP_HEIGHT = 50.0;
 const float DEFAULT_SPACESHIP_WIDTH = 50.0;
 
@@ -110,5 +110,5 @@ void Spaceship::setDestroyed(bool _destroyed) { destroyed = _destroyed; }
 
 void Spaceship::moveLeft(float tConst) { rect.x -= speed * tConst; }
 void Spaceship::moveRight(float tConst) { rect.x += speed * tConst; }
-void Spaceship::moveDown(float tConst) { rect.y += speed * tConst; }
-void Spaceship::moveUp(float tConst) { rect.y -= speed * tConst; }
+void Spaceship::moveDown(float tConst) { rect.y += speed * tConst / 2; }
+void Spaceship::moveUp(float tConst) { rect.y -= speed * tConst / 2; }

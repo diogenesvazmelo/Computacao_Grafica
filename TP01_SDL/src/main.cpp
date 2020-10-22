@@ -14,13 +14,11 @@
 
 #include <SOIL.h>
 #include <SOIL/SOIL.h>
-#include <math.h>
 
+#include <cstdlib>
 #include <iostream>
 #include <vector>
 
-#include "../include/colors.hpp"
-#include "../include/drawings.hpp"
 #include "../include/spaceship.hpp"
 #include "../include/utils.hpp"
 
@@ -32,13 +30,8 @@ const int DEFAULT_ENEMY_AREA = 100;
 // space of movement of the enemy
 const float DEFAULT_PADDING = (DEFAULT_ENEMY_AREA - DEFAULT_SHIP_WIDTH) / 2;
 const int ENEMY_AMOUNT = (int)(WINDOW_WIDTH / DEFAULT_ENEMY_AREA);
+const int VERTICAL_SPEED_LIMITER = 5;
 bool ENEMY_DIRECTION = true;  // Right/true and Left/false !
-
-Color VERMELHO = Color(1, 0, 0);
-Color VERDE = Color(0, 1, 0);
-Color AZUL = Color(0, 0, 1);
-Color PRETO = Color(0, 0, 0);
-Color BRANCO = Color(1, 1, 1);
 
 // VARIABLES --------------------------------------------------
 // SDL Section
@@ -47,15 +40,16 @@ SDL_Window *window;
 SDL_Renderer *rend;
 SDL_Surface *surface;
 SDL_Texture *playerTex, *alienTex, *blastTex;
-SDL_Texture *pauseTex, *gameOverTex;
+SDL_Texture *backgroundTex, *pauseTex, *gameOverTex;
 
 SDL_Rect *playerRect, *blastRect;
-SDL_Rect pauseRect, gameOverRect;
+SDL_Rect backgroundRect, pauseRect, gameOverRect;
 SDL_Rect *enemiesRects[ENEMY_AMOUNT];
 // State section
 bool running = true;
 bool blastExists = false;
 bool isPaused = false;
+int vecticalMov = 0;
 // Components
 Spaceship player;  // Nave -> (x, y, h, w, speed)
 Blast playerBlast;
@@ -66,7 +60,7 @@ std::vector<float> origCoord(ENEMY_AMOUNT);
 // framerate variables
 Uint32 frameRate = 60;
 Uint32 frameMS = (Uint32)std::floor(1000 / frameRate);
-float movConst = (float)1.0 / frameRate;
+float movConst = (float)1;
 // VARIABLES --------------------------------------------------
 
 bool init() {
@@ -89,13 +83,12 @@ bool init() {
   rend = SDL_CreateRenderer(window, -1, render_flags);
 
   // Loads textures
-  surface = IMG_Load("./imgs/player.bmp");
+  surface = IMG_Load("./imgs/player.png");
   playerTex = SDL_CreateTextureFromSurface(rend, surface);
-
-  SDL_FillRect(surface, blastRect, SDL_MapRGB(surface->format, 0, 0, 0));
-
-  surface = IMG_Load("./imgs/alien.bmp");
+  surface = IMG_Load("./imgs/alien.png");
   alienTex = SDL_CreateTextureFromSurface(rend, surface);
+  surface = IMG_Load("./imgs/background.gif");
+  backgroundTex = SDL_CreateTextureFromSurface(rend, surface);
   surface = IMG_Load("./imgs/pause_screen.bmp");
   pauseTex = SDL_CreateTextureFromSurface(rend, surface);
   surface = IMG_Load("./imgs/game_over_screen.bmp");
@@ -106,10 +99,10 @@ bool init() {
   // Generates proper Rectangles
   playerRect = player.getRect();
   blastRect = playerBlast.getRect();
-  pauseRect = utils::makeRect(0, 0, WINDOW_HEIGHT, WINDOW_WIDTH);
-  gameOverRect = utils::makeRect(0, 0, WINDOW_HEIGHT, WINDOW_WIDTH);
+  backgroundRect = utils::makeRect(0, 0, WINDOW_HEIGHT, WINDOW_WIDTH);
 
   // Connect each Rectangle to it's texture
+
   SDL_QueryTexture(playerTex, NULL, NULL, &playerRect->w, &playerRect->h);
   SDL_QueryTexture(blastTex, NULL, NULL, &blastRect->w, &blastRect->h);
   for (int i = 0; i < ENEMY_AMOUNT; i++) {
@@ -117,7 +110,6 @@ bool init() {
     SDL_QueryTexture(alienTex, NULL, NULL, &enemiesRects[i]->w,
                      &enemiesRects[i]->h);
   }
-  SDL_QueryTexture(pauseTex, NULL, NULL, &pauseRect.w, &pauseRect.h);
 
   return true;
 }
@@ -176,8 +168,6 @@ int main(int argc, char *args[]) {
             case SDL_SCANCODE_SPACE:
               if (blastExists == false) {
                 playerBlast = Blast(player.getX(), player.getY());
-                playerBlast.setThickness(
-                    5.0);  // TODO: why do i need to do this?
               }
               blastExists = true;
               break;
@@ -213,7 +203,8 @@ int main(int argc, char *args[]) {
 
         for (int i = 0; i < ENEMY_AMOUNT; i++) {
           if (!enemies[i].isDestroyed()) {
-            enemies[i].moveDown(movConst);
+            if (vecticalMov == 0) enemies[i].moveDown(movConst);
+            vecticalMov = rand() % VERTICAL_SPEED_LIMITER;
             utils::enemyMovement(
                 enemies[i], movConst, origCoord[i] - DEFAULT_PADDING,
                 origCoord[i] + DEFAULT_PADDING, ENEMY_DIRECTION);
@@ -224,10 +215,18 @@ int main(int argc, char *args[]) {
           }
         }
 
-        // clears the screen
+        // SDL_RenderCopy(rend, backgroundTex, NULL, &backgroundRect);
         SDL_RenderCopy(rend, playerTex, NULL, playerRect);
         if (blastExists) {
-          SDL_RenderDrawRect(rend, blastRect);
+          // Set render color to blue ( rect will be rendered in this color )
+          SDL_SetRenderDrawColor(rend, 255, 0, 255, 0);
+          // Render rect
+          SDL_RenderFillRect(rend, blastRect);
+          // Render the rect to the screen
+          SDL_RenderPresent(rend);
+
+          // set color back to normal for background.
+          SDL_SetRenderDrawColor(rend, 0, 0, 0, 0);
         }
         for (int i = 0; i < ENEMY_AMOUNT; i++) {
           if (!enemies[i].isDestroyed())
@@ -236,11 +235,11 @@ int main(int argc, char *args[]) {
         break;
       }
       case utils::PAUSED: {
-        SDL_RenderCopy(rend, pauseTex, NULL, &pauseRect);
+        SDL_RenderCopy(rend, pauseTex, NULL, &backgroundRect);
         break;
       }
       case utils::GAME_OVER: {
-        SDL_RenderCopy(rend, gameOverTex, NULL, &gameOverRect);
+        SDL_RenderCopy(rend, gameOverTex, NULL, &backgroundRect);
         break;
       }
       case utils::EXIT:

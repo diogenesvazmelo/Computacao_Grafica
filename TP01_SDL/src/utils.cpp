@@ -37,7 +37,6 @@ void utils::shot(SDL_Event event, bool &blastExists, Blast &b, Spaceship sp) {
   if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_SPACE) {
     if (blastExists == false) {
       b = Blast(sp.getX(), sp.getY());
-      b.setThickness(5.0);  // TODO: why do i need to do this?
     }
     blastExists = true;
   }

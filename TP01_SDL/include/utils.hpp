@@ -1,7 +1,6 @@
 #ifndef MY_UTILS_HPP
 #define MY_UTILS_HPP
 
-#include "./colors.hpp"
 #if __linux__
 #include <SDL2/SDL.h>
 #elif _WIN32
@@ -14,7 +13,7 @@
 
 namespace utils {
 enum STATES { PLAYING, PAUSED, GAME_OVER, EXIT };
-SDL_Rect makeRect(int x, int y, int h, int w);
+SDL_Rect makeRect(int _x, int _y, int _h, int _w);
 void checkState(SDL_Event event, STATES &game_state, bool &isPaused);
 void checkPlayerDirection(SDL_Event event, std::vector<bool> &playerDirection);
 void shot(SDL_Event event, bool &blastExists, Blast &b, Spaceship sp);
