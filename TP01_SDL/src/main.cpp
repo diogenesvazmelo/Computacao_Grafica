@@ -91,6 +91,9 @@ bool init() {
   // Loads textures
   surface = IMG_Load("./imgs/player.bmp");
   playerTex = SDL_CreateTextureFromSurface(rend, surface);
+
+  SDL_FillRect(surface, blastRect, SDL_MapRGB(surface->format, 0, 0, 0));
+
   surface = IMG_Load("./imgs/alien.bmp");
   alienTex = SDL_CreateTextureFromSurface(rend, surface);
   surface = IMG_Load("./imgs/pause_screen.bmp");
@@ -224,6 +227,7 @@ int main(int argc, char *args[]) {
         // clears the screen
         SDL_RenderCopy(rend, playerTex, NULL, playerRect);
         if (blastExists) {
+          SDL_RenderDrawRect(rend, blastRect);
         }
         for (int i = 0; i < ENEMY_AMOUNT; i++) {
           if (!enemies[i].isDestroyed())
