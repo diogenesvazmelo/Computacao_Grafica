@@ -12,11 +12,13 @@
 #include "../include/spaceship.hpp"
 
 namespace utils {
-enum STATES { PLAYING, PAUSED, GAME_OVER, EXIT };
+enum STATES { PLAYING, VICTORY, PAUSED, GAME_OVER, EXIT };
 SDL_Rect makeRect(int _x, int _y, int _h, int _w);
 void reset(Spaceship &player, std::vector<Spaceship> &enemies,
            float window_width, float window_height, float padding,
            float enemyArea);
+
+bool checkWinCondition(std::vector<Spaceship> sps);
 
 bool collision(Spaceship player, Spaceship enemy);
 bool collision(Blast blast, Spaceship enemy);

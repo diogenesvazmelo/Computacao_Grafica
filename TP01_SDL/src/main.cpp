@@ -35,7 +35,7 @@ const int DEFAULT_ENEMY_AREA = 100;
 // space of movement of the enemy
 const float DEFAULT_PADDING = (DEFAULT_ENEMY_AREA - DEFAULT_SHIP_WIDTH) / 2;
 const int ENEMY_AMOUNT = (int)(WINDOW_WIDTH / DEFAULT_ENEMY_AREA);
-const int VERTICAL_RANDOM_LIMITER = 5;
+const int VERTICAL_RANDOM_LIMITER = 2;
 const int ENEMY_BLAST_RANDOM_LIMITER = 100;
 bool ENEMY_DIRECTION = true;  // Right/true and Left/false !
 
@@ -46,7 +46,7 @@ SDL_Window *window;
 SDL_Renderer *rend;
 SDL_Surface *surface;
 SDL_Texture *playerTex, *alienTex;
-SDL_Texture *backgroundTex, *pauseTex, *gameOverTex;
+SDL_Texture *backgroundTex, *pauseTex, *gameOverTex, *victoryTex;
 
 SDL_Rect *playerRect, *blastRect;
 SDL_Rect backgroundRect, pauseRect, gameOverRect;
@@ -96,6 +96,8 @@ bool init() {
   alienTex = SDL_CreateTextureFromSurface(rend, surface);
   surface = IMG_Load("./imgs/background.gif");
   backgroundTex = SDL_CreateTextureFromSurface(rend, surface);
+  surface = IMG_Load("./imgs/victory_screen.bmp");
+  victoryTex = SDL_CreateTextureFromSurface(rend, surface);
   surface = IMG_Load("./imgs/pause_screen.bmp");
   pauseTex = SDL_CreateTextureFromSurface(rend, surface);
   surface = IMG_Load("./imgs/game_over_screen.bmp");
@@ -141,6 +143,7 @@ int main(int argc, char *args[]) {
     Uint32 startMs = SDL_GetTicks();
     bool resetState = false;
     // event - teclado
+    if (utils::checkWinCondition(enemies)) GAME_STATE = utils::VICTORY;
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
         case SDL_QUIT:
@@ -282,7 +285,7 @@ int main(int argc, char *args[]) {
         SDL_RenderCopy(rend, playerTex, NULL, playerRect);
 
         if (blastExists) {
-          SDL_SetRenderDrawColor(rend, 255, 0, 255, 0);
+          SDL_SetRenderDrawColor(rend, 255, 255, 255, 0);
           SDL_RenderFillRect(rend, blastRect);
         }
         for (int i = 0; i < ENEMY_AMOUNT; i++) {
@@ -297,6 +300,10 @@ int main(int argc, char *args[]) {
         SDL_SetRenderDrawColor(rend, 0, 0, 0, 0);
         break;
       }
+      case utils::VICTORY: {
+        SDL_RenderCopy(rend, victoryTex, NULL, &backgroundRect);
+        break;
+      }
       case utils::PAUSED: {
         SDL_RenderCopy(rend, pauseTex, NULL, &backgroundRect);
         break;
@@ -305,10 +312,10 @@ int main(int argc, char *args[]) {
         SDL_RenderCopy(rend, gameOverTex, NULL, &backgroundRect);
         break;
       }
-      case utils::EXIT:
+      case utils::EXIT: {
         running = false;
         break;
-
+      }
       default:
         std::cout << "SOMETHING WENT WRONG!\n";
         break;

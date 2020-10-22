@@ -24,6 +24,13 @@ void utils::reset(Spaceship &player, std::vector<Spaceship> &enemies,
   }
 }
 
+bool utils::checkWinCondition(std::vector<Spaceship> sps) {
+  for (int i = 0; i < sps.size(); i++) {
+    if (!sps[i].isDestroyed()) return false;
+  }
+  return true;
+}
+
 bool utils::collision(Spaceship player, Spaceship enemy) {
   float p[4] = {
       player.getX(),
@@ -41,7 +48,6 @@ bool utils::collision(Spaceship player, Spaceship enemy) {
   if (p[0] < e[1] && p[1] > e[0] && p[2] < e[3] && p[3] > e[2]) return true;
   return false;
 }
-
 bool utils::collision(Blast blast, Spaceship enemy) {
   float b[4] = {
       blast.getX(),
@@ -95,7 +101,6 @@ bool utils::outOfBounds(Spaceship sp, float SCREEN_WIDTH, float SCREEN_HEIGHT) {
   return (upperX < 0 || lowerX > SCREEN_WIDTH || upperY < 0 ||
           lowerY > SCREEN_HEIGHT);
 }
-
 bool utils::outOfBounds(Blast b, float SCREEN_WIDTH, float SCREEN_HEIGHT) {
   float upperX = b.getX();
   float lowerX = b.getX() + b.getThickness();
